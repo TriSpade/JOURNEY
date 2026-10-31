@@ -89,9 +89,16 @@ export default function MusicPlayer() {
     else void start();
   };
 
-  useEffect(() => () => {
-    if (timerRef.current !== null) window.clearInterval(timerRef.current);
-    void contextRef.current?.close();
+  useEffect(() => {
+    const startFromIntro = () => {
+      if (!contextRef.current) void start();
+    };
+    window.addEventListener("journey:start-music", startFromIntro);
+    return () => {
+      window.removeEventListener("journey:start-music", startFromIntro);
+      if (timerRef.current !== null) window.clearInterval(timerRef.current);
+      void contextRef.current?.close();
+    };
   }, []);
 
   return (

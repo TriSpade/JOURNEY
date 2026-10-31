@@ -1,4 +1,5 @@
 import Countdown from "./components/Countdown";
+import IntroExperience from "./components/IntroExperience";
 import MusicPlayer from "./components/MusicPlayer";
 
 const storyMoments = [
@@ -33,6 +34,7 @@ function HeartMark({ small = false }: { small?: boolean }) {
 export default function Home() {
   return (
     <main>
+      <IntroExperience />
       <section className="hero" id="home">
         <div className="hero__image" aria-hidden="true" />
         <div className="hero__veil" aria-hidden="true" />
