@@ -38,7 +38,7 @@ export default function Home() {
         <nav className="nav shell" aria-label="Navigasi utama">
           <a className="brand" href="#home" aria-label="Beranda Our Journey">
             <HeartMark small />
-            <span><strong>Our Journey</strong><em>D &amp; You</em></span>
+            <span><strong>Our Journey</strong><em>Dimas &amp; Anita</em></span>
           </a>
           <div className="nav__links">
             <a href="#story">Kisah Kita</a><a href="#memories">Kenangan</a><a href="#trip">Perjalanan</a><a href="#bucket">Bucket List</a>
@@ -132,10 +132,10 @@ export default function Home() {
 
       <section className="letter section" aria-labelledby="letter-title">
         <div className="letter__glow" aria-hidden="true" />
-        <div className="shell letter__inner reveal-on-scroll"><HeartMark /><p className="eyebrow eyebrow--light"><span /> A little note for you <span /></p><h2 id="letter-title">Ke mana pun langkah membawa kita,<br /><i>aku ingin menjalaninya bersamamu.</i></h2><p>Ini baru permulaan. Akan ada lebih banyak kota, lebih banyak foto, lebih banyak tawa, dan lebih banyak alasan untuk saling memilih—setiap hari.</p><div className="signature"><span>with all my heart,</span><strong>D.</strong></div></div>
+        <div className="shell letter__inner reveal-on-scroll"><HeartMark /><p className="eyebrow eyebrow--light"><span /> A little note for Anita <span /></p><h2 id="letter-title">Ke mana pun langkah membawa kita,<br /><i>aku ingin menjalaninya bersamamu.</i></h2><p>Ini baru permulaan. Akan ada lebih banyak kota, lebih banyak foto, lebih banyak tawa, dan lebih banyak alasan untuk saling memilih—setiap hari.</p><div className="signature"><span>with all my heart,</span><strong>Dimas.</strong></div></div>
       </section>
 
-      <footer className="footer"><div className="shell footer__inner"><a className="brand brand--footer" href="#home"><HeartMark small /><span><strong>Our Journey</strong><em>D &amp; You</em></span></a><p>Dibuat dengan cinta, untuk semua cerita yang belum terjadi.</p><a href="#home" className="back-top">Kembali ke atas <span>↑</span></a></div></footer>
+      <footer className="footer"><div className="shell footer__inner"><a className="brand brand--footer" href="#home"><HeartMark small /><span><strong>Our Journey</strong><em>Dimas &amp; Anita</em></span></a><p>Dibuat dengan cinta, untuk semua cerita yang belum terjadi.</p><a href="#home" className="back-top">Kembali ke atas <span>↑</span></a></div></footer>
     </main>
   );
 }
