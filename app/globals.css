@@ -195,10 +195,11 @@ h1 i,h2 i { color:var(--rose); font-weight:400; }
   .hero__bottom { height:56px; }
   .hero__bottom>p { display:none; }
   .countdown__intro h2,.section-heading h2,.trip__content h2,.bucket__header h2 { font-size:45px; }
-  .countdown__clock { grid-template-columns:repeat(2,1fr); padding:10px; }
-  .time-unit { min-height:105px; }
-  .time-unit:nth-child(2)::after { display:none; }
-  .time-unit:nth-child(-n+2) { border-bottom:1px solid var(--line); }
+  .countdown__clock { grid-template-columns:repeat(4,minmax(0,1fr)); padding:8px 4px; }
+  .time-unit { min-width:0; min-height:86px; }
+  .time-unit:not(:last-child)::after { display:block; height:38px; }
+  .time-unit strong { font-size:clamp(26px,8.5vw,36px); }
+  .time-unit span { margin-top:5px; font-size:6px; letter-spacing:.12em; }
   .trip__visual { min-height:430px; }
   .trip__photo { inset:18px 0 0 0; }
   .postcard--top { top:44px; left:-8px; }
