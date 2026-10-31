@@ -7,10 +7,11 @@ export default function IntroExperience() {
   const [leaving, setLeaving] = useState(false);
 
   useEffect(() => {
+    if (!visible) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => { document.body.style.overflow = previousOverflow; };
-  }, []);
+  }, [visible]);
 
   const enter = () => {
     window.dispatchEvent(new Event("journey:start-music"));
