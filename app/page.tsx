@@ -1,4 +1,5 @@
 import Countdown from "./components/Countdown";
+import MusicPlayer from "./components/MusicPlayer";
 
 const storyMoments = [
   { number: "01", eyebrow: "Awal cerita", title: "Saat semesta mempertemukan kita", text: "Dari percakapan sederhana, tumbuh sebuah tempat pulang yang selalu ingin kita jaga bersama." },
@@ -136,6 +137,7 @@ export default function Home() {
       </section>
 
       <footer className="footer"><div className="shell footer__inner"><a className="brand brand--footer" href="#home"><HeartMark small /><span><strong>Our Journey</strong><em>Dimas &amp; Anita</em></span></a><p>Dibuat dengan cinta, untuk semua cerita yang belum terjadi.</p><a href="#home" className="back-top">Kembali ke atas <span>↑</span></a></div></footer>
+      <MusicPlayer />
     </main>
   );
 }
