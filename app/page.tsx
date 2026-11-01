@@ -1,9 +1,10 @@
 import Countdown from "./components/Countdown";
+import InlineVideoReference from "./components/InlineVideoReference";
 import IntroExperience from "./components/IntroExperience";
 import MusicPlayer from "./components/MusicPlayer";
 
 const storyMoments = [
-  { number: "01", eyebrow: "Pagi pertama", title: "Memulai hari di Kawah Putih", text: "Kabut, udara dingin, dan Ontang-Anting menjadi pembuka perjalanan yang sudah lama kita bayangkan.", href: "https://www.instagram.com/reels/DHvu2qhyZXz/", provider: "Lihat referensi Instagram" },
+  { number: "01", eyebrow: "Pagi pertama", title: "Memulai hari di Kawah Putih", text: "Kabut, udara dingin, dan Ontang-Anting menjadi pembuka perjalanan yang sudah lama kita bayangkan.", href: "https://www.instagram.com/reels/DHvu2qhyZXz/", provider: "Putar referensi Instagram" },
   { number: "02", eyebrow: "Siang berdua", title: "Mencari hangat di Rengganis", text: "Jembatan gantung, Keranjang Sultan, dan waktu yang kita sisihkan untuk menikmati perjalanan tanpa terburu-buru.", href: "https://www.tiktok.com/@eunike_octaviani/video/7667905164656839956", provider: "Putar referensi TikTok" },
   { number: "03", eyebrow: "Penutup hari", title: "Pulang membawa cerita dari Braga", text: "Setelah perjalanan panjang dari Ciwidey, kita menutup hari dengan makan malam dan lampu-lampu kota Bandung.", href: "https://www.tiktok.com/@mainbandung.yuk/video/7701695826116054290", provider: "Putar referensi TikTok" },
 ];
@@ -96,7 +97,7 @@ export default function Home() {
               <article className="story-card reveal-on-scroll" key={moment.number}>
                 <div className="story-card__top"><span className="story-card__number">{moment.number}</span><span className="story-card__dot" aria-hidden="true" /></div>
                 <p className="story-card__eyebrow">{moment.eyebrow}</p><h3>{moment.title}</h3><p>{moment.text}</p>
-                <a className="story-card__link" href={moment.href} target="_blank" rel="noreferrer" aria-label={`${moment.provider}: ${moment.title}`}>{moment.provider} <span>↗</span></a>
+                <InlineVideoReference url={moment.href} label={moment.provider} title={moment.title} />
                 {index === 2 && <span className="story-card__soon">15.11</span>}
               </article>
             ))}
@@ -128,7 +129,7 @@ export default function Home() {
           <div className="bucket__list">
             {bucketItems.map((item, index) => (
               <article className="bucket-row reveal-on-scroll" key={item.title}>
-                <span className="bucket-row__index">0{index + 1}</span><span className="bucket-row__check" aria-hidden="true" /><div><h3>{item.title}</h3><p>{item.meta}</p></div><span className="bucket-row__tag">{item.tag}</span><a href={item.href} target="_blank" rel="noreferrer" aria-label={`Buka referensi ${item.title}`}>↗</a>
+                <span className="bucket-row__index">0{index + 1}</span><span className="bucket-row__check" aria-hidden="true" /><div><h3>{item.title}</h3><p>{item.meta}</p></div><span className="bucket-row__tag">{item.tag}</span><InlineVideoReference url={item.href} label={`Putar ${item.title}`} title={item.title} variant="row" />
               </article>
             ))}
           </div>
