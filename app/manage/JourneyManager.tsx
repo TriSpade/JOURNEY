@@ -45,7 +45,7 @@ function embedVideoUrl(url: string) {
   const tiktok = url.match(/tiktok\.com\/@[^/]+\/video\/(\d+)/i);
   if (tiktok) return { provider: "TikTok", url: `https://www.tiktok.com/player/v1/${tiktok[1]}?controls=1&progress_bar=1&play_button=1&volume_control=1&fullscreen_button=1&autoplay=0&music_info=1&description=1&rel=0` };
   const instagram = url.match(/instagram\.com\/reels?\/([^/?#]+)/i);
-  if (instagram) return { provider: "Instagram", url: `https://www.instagram.com/reel/${instagram[1]}/embed/` };
+  if (instagram) return { provider: "Instagram", url: `https://www.instagram.com/p/${instagram[1]}/embed/` };
   return null;
 }
 
