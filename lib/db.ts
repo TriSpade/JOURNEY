@@ -55,6 +55,8 @@ function openDatabase() {
   CREATE INDEX IF NOT EXISTS idx_messages_destination ON messages(destination_id, created_at);
   CREATE INDEX IF NOT EXISTS idx_reactions_destination ON reactions(destination_id);
   `);
+  const mediaColumns = database.pragma("table_info(destination_media)") as Array<{ name: string }>;
+  if (!mediaColumns.some((column) => column.name === "label")) database.exec("ALTER TABLE destination_media ADD COLUMN label TEXT");
 
   const destinationColumns = database.pragma("table_info(destinations)") as Array<{ name: string }>;
   if (!destinationColumns.some((column) => column.name === "photo_path")) database.exec("ALTER TABLE destinations ADD COLUMN photo_path TEXT");

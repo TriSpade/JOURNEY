@@ -16,6 +16,10 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   const currentCount = (db.prepare("SELECT COUNT(*) AS count FROM destination_media WHERE destination_id=? AND type='photo'").get(id) as { count: number }).count;
   const form = await request.formData();
   const files = form.getAll("photos").filter((item): item is File => item instanceof File);
+  const labelsValue = form.get("labels");
+  let labels: unknown[] = [];
+  try { labels = typeof labelsValue === "string" ? (JSON.parse(labelsValue) as unknown[]) : []; }
+  catch { labels = []; }
   if (!files.length) return NextResponse.json({ error: "Pilih foto terlebih dahulu." }, { status: 400 });
   if (currentCount + files.length > 12) return NextResponse.json({ error: "Maksimal 12 foto per destinasi." }, { status: 400 });
   for (const file of files) {
@@ -30,7 +34,10 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       const target = safeUploadPath(filename);
       if (!target) throw new Error("Nama file tidak valid.");
       await writeFile(target, Buffer.from(await file.arrayBuffer()));
-      db.prepare("INSERT INTO destination_media (destination_id, type, value, created_by) VALUES (?, 'photo', ?, ?)").run(id, filename, auth.user.id);
+      const fallbackLabel = file.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ").trim() || `Foto ${saved.length + 1}`;
+      const rawLabel = labels[saved.length];
+      const label = typeof rawLabel === "string" ? rawLabel.trim().slice(0, 100) || fallbackLabel : fallbackLabel;
+      db.prepare("INSERT INTO destination_media (destination_id, type, value, label, created_by) VALUES (?, 'photo', ?, ?, ?)").run(id, filename, label, auth.user.id);
       saved.push({ filename, url: `/api/uploads/${filename}` });
     }
     return NextResponse.json({ photos: saved.map((item) => item.url) });

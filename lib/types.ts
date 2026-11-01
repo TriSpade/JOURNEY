@@ -22,6 +22,7 @@ export type DestinationMedia = {
   id: number;
   type: "photo" | "video";
   url: string;
+  label: string;
 };
 
 export type Destination = {

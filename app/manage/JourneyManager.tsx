@@ -21,6 +21,26 @@ function formatDate(value: string | null) {
   return new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "long", year: "numeric" }).format(new Date(`${value}T00:00:00`));
 }
 
+function PhotoCarousel({ destination, onRemove }: { destination: Destination; onRemove: (id: number, label: string) => void }) {
+  const [current, setCurrent] = useState(0);
+  if (!destination.photos.length) return <div className="destination-carousel destination-carousel--empty"><span>⌖</span><p>Tambahkan foto untuk menghidupkan rencana ini.</p></div>;
+  const activeIndex = current % destination.photos.length;
+  const active = destination.photos[activeIndex];
+  const move = (direction: number) => setCurrent((index) => (index + direction + destination.photos.length) % destination.photos.length);
+  return (
+    <div className="destination-carousel">
+      <div className="destination-carousel__stage">
+        <Image src={active.url} alt={active.label} fill sizes="(max-width: 900px) 100vw, 55vw" unoptimized priority={false} />
+        <div className="destination-carousel__shade" />
+        <div className="destination-carousel__caption"><small>Destinasi {String(activeIndex + 1).padStart(2, "0")}</small><strong>{active.label}</strong></div>
+        <button className="destination-carousel__delete" onClick={() => onRemove(active.id, "foto")} aria-label={`Hapus foto ${active.label}`}>×</button>
+        {destination.photos.length > 1 && <><button className="destination-carousel__arrow destination-carousel__arrow--prev" onClick={() => move(-1)} aria-label="Foto sebelumnya">‹</button><button className="destination-carousel__arrow destination-carousel__arrow--next" onClick={() => move(1)} aria-label="Foto berikutnya">›</button><span className="destination-carousel__count">{activeIndex + 1} / {destination.photos.length}</span></>}
+      </div>
+      {destination.photos.length > 1 && <div className="destination-carousel__thumbs">{destination.photos.map((photo, index) => <button className={index === activeIndex ? "is-active" : ""} key={photo.id} onClick={() => setCurrent(index)} aria-label={`Tampilkan ${photo.label}`}><Image src={photo.url} alt="" fill sizes="84px" unoptimized /><span>{photo.label}</span></button>)}</div>}
+    </div>
+  );
+}
+
 export default function JourneyManager() {
   const [user, setUser] = useState<UserIdentity | null>(null);
   const [destinations, setDestinations] = useState<Destination[]>([]);
@@ -31,6 +51,7 @@ export default function JourneyManager() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [photos, setPhotos] = useState<File[]>([]);
+  const [photoLabels, setPhotoLabels] = useState("");
   const [drafts, setDrafts] = useState<Record<number, string>>({});
 
   const loadDestinations = useCallback(async () => {
@@ -70,11 +91,12 @@ export default function JourneyManager() {
     setUser(null); setDestinations([]);
   };
 
-  const openCreate = () => { setEditingId(null); setForm(emptyForm); setPhotos([]); setShowForm(true); setError(""); };
+  const openCreate = () => { setEditingId(null); setForm(emptyForm); setPhotos([]); setPhotoLabels(""); setShowForm(true); setError(""); };
   const openEdit = (destination: Destination) => {
     setEditingId(destination.id);
     setForm({ title: destination.title, location: destination.location, plannedDate: destination.plannedDate ?? "", status: destination.status, notes: destination.notes, videoUrls: destination.videos.map((video) => video.url).join("\n") });
     setPhotos([]);
+    setPhotoLabels("");
     setShowForm(true); setError("");
   };
 
@@ -87,11 +109,12 @@ export default function JourneyManager() {
       if (photos.length && destinationId) {
         const photoData = new FormData();
         photos.forEach((photo) => photoData.append("photos", photo));
+        photoData.append("labels", JSON.stringify(photoLabels.split(/\r?\n/).map((label) => label.trim())));
         const upload = await fetch(`/api/destinations/${destinationId}/photos`, { method: "POST", body: photoData });
         const uploadResult = await upload.json().catch(() => ({}));
         if (!upload.ok) throw new Error(uploadResult.error ?? "Gagal mengunggah foto.");
       }
-      setShowForm(false); setForm(emptyForm); setPhotos([]); setEditingId(null); await loadDestinations();
+      setShowForm(false); setForm(emptyForm); setPhotos([]); setPhotoLabels(""); setEditingId(null); await loadDestinations();
     } catch (reason) { setError(reason instanceof Error ? reason.message : "Gagal menyimpan destinasi."); }
     finally { setBusy(false); }
   };
@@ -169,33 +192,35 @@ export default function JourneyManager() {
         <section className="destination-grid">
           {destinations.map((destination, index) => (
             <article className="destination-card" key={destination.id}>
-              {destination.photos.length > 0 && <div className={`destination-gallery destination-gallery--${Math.min(destination.photos.length, 4)}`}>{destination.photos.map((photo, photoIndex) => <div className="destination-photo" key={photo.id}><Image src={photo.url} alt={`Foto ${destination.title} ${photoIndex + 1}`} fill sizes="(max-width: 760px) 100vw, 25vw" unoptimized /><button onClick={() => removeMedia(photo.id, "foto")} aria-label="Hapus foto">×</button></div>)}</div>}
-              <div className="destination-card__top"><span className={`status status--${destination.status}`}>{statusLabels[destination.status]}</span><span className="destination-card__number">{String(index + 1).padStart(2, "0")}</span></div>
-              <h2>{destination.title}</h2><p className="destination-location">⌖ {destination.location || "Lokasi belum ditentukan"}</p>
-              <div className="destination-meta"><span><small>Tanggal</small><strong>{formatDate(destination.plannedDate)}</strong></span></div>
-              {destination.notes && <p className="destination-notes">{destination.notes}</p>}
-              {destination.videos.length > 0 && <div className="video-list">{destination.videos.map((video, videoIndex) => <div className="video-reference" key={video.id}><a href={video.url} target="_blank" rel="noreferrer"><span>▶</span><div><small>Referensi video {videoIndex + 1}</small><strong>Buka inspirasi perjalanan ↗</strong></div></a><button onClick={() => removeMedia(video.id, "referensi video")} aria-label="Hapus referensi video">×</button></div>)}</div>}
-              <p className="destination-author">Ditambahkan oleh {destination.createdBy.displayName}</p>
-              <div className="reaction-row">
-                {reactions.map((emoji) => {
-                  const current = destination.reactions.find((item) => item.emoji === emoji);
-                  return <button key={emoji} className={current?.reactedByMe ? "reaction reaction--active" : "reaction"} onClick={() => toggleReaction(destination.id, emoji)} title={current?.users.join(", ")}><span>{emoji}</span>{current?.count ? <b>{current.count}</b> : null}</button>;
-                })}
-              </div>
-              <div className="message-panel">
-                <div className="message-panel__title"><strong>Pesan kalian</strong><span>{destination.messages.length}</span></div>
-                <div className="message-list">
-                  {destination.messages.length === 0 && <p className="message-empty">Belum ada pesan. Tinggalkan satu untuk pasanganmu ♡</p>}
-                  {destination.messages.map((message) => <div className={message.user.id === user.id ? "message message--mine" : "message"} key={message.id}><div><strong>{message.user.displayName}</strong><p>{message.body}</p></div>{message.user.id === user.id && <button onClick={() => removeMessage(message.id)} aria-label="Hapus pesan">×</button>}</div>)}
+              <PhotoCarousel destination={destination} onRemove={removeMedia} />
+              <div className="destination-card__body">
+                <div className="destination-card__top"><span className={`status status--${destination.status}`}>{statusLabels[destination.status]}</span><span className="destination-card__number">{String(index + 1).padStart(2, "0")}</span></div>
+                <h2>{destination.title}</h2><p className="destination-location">⌖ {destination.location || "Lokasi belum ditentukan"}</p>
+                <div className="destination-meta"><span><small>Tanggal</small><strong>{formatDate(destination.plannedDate)}</strong></span></div>
+                {destination.notes && <p className="destination-notes">{destination.notes}</p>}
+                {destination.videos.length > 0 && <div className="video-list">{destination.videos.map((video, videoIndex) => <div className="video-reference" key={video.id}><a href={video.url} target="_blank" rel="noreferrer"><span>▶</span><div><small>{video.label || `Referensi video ${videoIndex + 1}`}</small><strong>Buka inspirasi perjalanan ↗</strong></div></a><button onClick={() => removeMedia(video.id, "referensi video")} aria-label="Hapus referensi video">×</button></div>)}</div>}
+                <p className="destination-author">Ditambahkan oleh {destination.createdBy.displayName}</p>
+                <div className="reaction-row">
+                  {reactions.map((emoji) => {
+                    const current = destination.reactions.find((item) => item.emoji === emoji);
+                    return <button key={emoji} className={current?.reactedByMe ? "reaction reaction--active" : "reaction"} onClick={() => toggleReaction(destination.id, emoji)} title={current?.users.join(", ")}><span>{emoji}</span>{current?.count ? <b>{current.count}</b> : null}</button>;
+                  })}
                 </div>
-                <form className="message-form" onSubmit={(event) => sendMessage(event, destination.id)}><input value={drafts[destination.id] ?? ""} onChange={(event) => setDrafts((current) => ({ ...current, [destination.id]: event.target.value }))} placeholder="Tulis pesan…" maxLength={500} /><button type="submit" aria-label="Kirim pesan">→</button></form>
+                <div className="message-panel">
+                  <div className="message-panel__title"><strong>Pesan kalian</strong><span>{destination.messages.length}</span></div>
+                  <div className="message-list">
+                    {destination.messages.length === 0 && <p className="message-empty">Belum ada pesan. Tinggalkan satu untuk pasanganmu ♡</p>}
+                    {destination.messages.map((message) => <div className={message.user.id === user.id ? "message message--mine" : "message"} key={message.id}><div><strong>{message.user.displayName}</strong><p>{message.body}</p></div>{message.user.id === user.id && <button onClick={() => removeMessage(message.id)} aria-label="Hapus pesan">×</button>}</div>)}
+                  </div>
+                  <form className="message-form" onSubmit={(event) => sendMessage(event, destination.id)}><input value={drafts[destination.id] ?? ""} onChange={(event) => setDrafts((current) => ({ ...current, [destination.id]: event.target.value }))} placeholder="Tulis pesan…" maxLength={500} /><button type="submit" aria-label="Kirim pesan">→</button></form>
+                </div>
+                <div className="destination-actions"><button onClick={() => openEdit(destination)}>Edit</button><button className="danger" onClick={() => removeDestination(destination)}>Hapus</button></div>
               </div>
-              <div className="destination-actions"><button onClick={() => openEdit(destination)}>Edit</button><button className="danger" onClick={() => removeDestination(destination)}>Hapus</button></div>
             </article>
           ))}
         </section>
       )}
-      {showForm && <div className="modal-backdrop" onMouseDown={(event) => { if (event.currentTarget === event.target) setShowForm(false); }}><section className="destination-modal" role="dialog" aria-modal="true" aria-labelledby="destination-form-title"><button className="modal-close" onClick={() => setShowForm(false)} aria-label="Tutup">×</button><p className="manager-eyebrow">Our next chapter</p><h2 id="destination-form-title">{editingId ? "Edit destinasi" : "Destinasi baru"}</h2><form onSubmit={saveDestination}><label>Nama destinasi<input value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} required maxLength={120} placeholder="Contoh: Yogyakarta" /></label><label>Lokasi<input value={form.location} onChange={(event) => setForm({ ...form, location: event.target.value })} maxLength={160} placeholder="Kota atau tempat spesifik" /></label><div className="form-row"><label>Tanggal<input type="date" value={form.plannedDate} onChange={(event) => setForm({ ...form, plannedDate: event.target.value })} /></label><label>Status<select value={form.status} onChange={(event) => setForm({ ...form, status: event.target.value })}><option value="wishlist">Wishlist</option><option value="planned">Direncanakan</option><option value="visited">Sudah dikunjungi</option></select></label></div><label>Foto destinasi<input className="file-input" type="file" multiple accept="image/jpeg,image/png,image/webp" onChange={(event) => setPhotos(Array.from(event.target.files ?? []))} /><small className="field-help">Bisa pilih beberapa foto · JPG, PNG, atau WebP · maksimal 8 MB per foto · maksimal 12 foto{photos.length ? ` · ${photos.length} foto dipilih` : ""}</small></label><label>Referensi video<textarea value={form.videoUrls} onChange={(event) => setForm({ ...form, videoUrls: event.target.value })} maxLength={10000} rows={3} placeholder={"https://youtube.com/...\nhttps://tiktok.com/..."} /><small className="field-help">Satu link per baris · maksimal 20 link.</small></label><label>Catatan<textarea value={form.notes} onChange={(event) => setForm({ ...form, notes: event.target.value })} maxLength={1500} rows={4} placeholder="Hal yang ingin dilakukan, tempat makan, atau catatan kecil…" /></label>{error && <p className="form-error">{error}</p>}<button className="manager-primary" disabled={busy} type="submit">{busy ? "Menyimpan…" : editingId ? "Simpan perubahan" : "Tambahkan ke perjalanan"}</button></form></section></div>}
+      {showForm && <div className="modal-backdrop" onMouseDown={(event) => { if (event.currentTarget === event.target) setShowForm(false); }}><section className="destination-modal" role="dialog" aria-modal="true" aria-labelledby="destination-form-title"><button className="modal-close" onClick={() => setShowForm(false)} aria-label="Tutup">×</button><p className="manager-eyebrow">Our next chapter</p><h2 id="destination-form-title">{editingId ? "Edit destinasi" : "Destinasi baru"}</h2><form onSubmit={saveDestination}><label>Nama destinasi<input value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} required maxLength={120} placeholder="Contoh: Yogyakarta" /></label><label>Lokasi<input value={form.location} onChange={(event) => setForm({ ...form, location: event.target.value })} maxLength={160} placeholder="Kota atau tempat spesifik" /></label><div className="form-row"><label>Tanggal<input type="date" value={form.plannedDate} onChange={(event) => setForm({ ...form, plannedDate: event.target.value })} /></label><label>Status<select value={form.status} onChange={(event) => setForm({ ...form, status: event.target.value })}><option value="wishlist">Wishlist</option><option value="planned">Direncanakan</option><option value="visited">Sudah dikunjungi</option></select></label></div><label>Foto destinasi<input className="file-input" type="file" multiple accept="image/jpeg,image/png,image/webp" onChange={(event) => { const selected = Array.from(event.target.files ?? []); setPhotos(selected); setPhotoLabels(selected.map((file) => file.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ")).join("\n")); }} /><small className="field-help">Bisa pilih beberapa foto · JPG, PNG, atau WebP · maksimal 8 MB per foto · maksimal 12 foto{photos.length ? ` · ${photos.length} foto dipilih` : ""}</small></label>{photos.length > 0 && <label>Label foto<textarea value={photoLabels} onChange={(event) => setPhotoLabels(event.target.value)} rows={Math.min(photos.length, 5)} placeholder={"Kawah Putih\nKebun Teh Rancabali"} /><small className="field-help">Satu label per baris sesuai urutan foto.</small></label>}<label>Referensi video<textarea value={form.videoUrls} onChange={(event) => setForm({ ...form, videoUrls: event.target.value })} maxLength={10000} rows={3} placeholder={"https://youtube.com/...\nhttps://tiktok.com/..."} /><small className="field-help">Satu link per baris · maksimal 20 link.</small></label><label>Catatan<textarea value={form.notes} onChange={(event) => setForm({ ...form, notes: event.target.value })} maxLength={1500} rows={4} placeholder="Hal yang ingin dilakukan, tempat makan, atau catatan kecil…" /></label>{error && <p className="form-error">{error}</p>}<button className="manager-primary" disabled={busy} type="submit">{busy ? "Menyimpan…" : editingId ? "Simpan perubahan" : "Tambahkan ke perjalanan"}</button></form></section></div>}
     </main>
   );
 }

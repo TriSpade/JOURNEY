@@ -24,16 +24,29 @@
 .manager-stats div { background: #efe3da; padding: 24px 28px; display: flex; align-items: baseline; gap: 12px; }
 .manager-stats strong { color: #a64e54; font: 400 32px/1 Georgia, serif; }
 .manager-stats span { color: #79635c; font-size: 13px; }
-.destination-grid { max-width: 1180px; margin: 0 auto; padding: 0 24px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
-.destination-card { background: #fffaf6; border: 1px solid rgba(83,51,41,.1); padding: 28px; box-shadow: 0 18px 50px rgba(81,48,38,.07); }
-.destination-gallery { display: grid; gap: 2px; margin: -28px -28px 26px; overflow: hidden; }
-.destination-gallery--1 { grid-template-columns: 1fr; }
-.destination-gallery--2, .destination-gallery--3, .destination-gallery--4 { grid-template-columns: repeat(2, 1fr); }
-.destination-photo { position: relative; height: 230px; overflow: hidden; background: #eadfd8; }
-.destination-gallery--3 .destination-photo, .destination-gallery--4 .destination-photo { height: 165px; }
-.destination-gallery--3 .destination-photo:first-child { grid-row: span 2; height: 332px; }
-.destination-photo img { object-fit: cover; }
-.destination-photo button { position: absolute; z-index: 2; right: 12px; top: 12px; width: 34px; height: 34px; border: 0; border-radius: 50%; background: rgba(46,27,22,.72); color: white; cursor: pointer; font-size: 20px; backdrop-filter: blur(8px); }
+.destination-grid { max-width: 1180px; margin: 0 auto; padding: 0 24px; display: grid; grid-template-columns: 1fr; gap: 30px; }
+.destination-card { background: #fffaf6; border: 1px solid rgba(83,51,41,.1); display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(400px, .92fr); overflow: hidden; box-shadow: 0 24px 70px rgba(81,48,38,.1); }
+.destination-card__body { min-width: 0; padding: 38px; }
+.destination-carousel { min-width: 0; display: flex; flex-direction: column; background: #2f211d; }
+.destination-carousel--empty { min-height: 580px; align-items: center; justify-content: center; color: #d7c4bb; text-align: center; padding: 40px; }
+.destination-carousel--empty span { color: #c2787d; font-size: 50px; }
+.destination-carousel--empty p { max-width: 260px; line-height: 1.6; }
+.destination-carousel__stage { position: relative; flex: 1; min-height: 580px; overflow: hidden; background: #3a2a25; }
+.destination-carousel__stage > img { object-fit: cover; transition: opacity .25s ease; }
+.destination-carousel__shade { position: absolute; z-index: 1; inset: 42% 0 0; background: linear-gradient(transparent, rgba(28,15,12,.88)); pointer-events: none; }
+.destination-carousel__caption { position: absolute; z-index: 2; left: 32px; right: 90px; bottom: 31px; display: grid; gap: 7px; color: white; }
+.destination-carousel__caption small { color: #e5c8c5; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; }
+.destination-carousel__caption strong { font: 400 clamp(28px, 3vw, 46px)/1 Georgia, serif; text-shadow: 0 2px 20px rgba(0,0,0,.3); }
+.destination-carousel__delete { position: absolute; z-index: 3; right: 16px; top: 16px; width: 38px; height: 38px; border: 1px solid rgba(255,255,255,.42); border-radius: 50%; background: rgba(35,20,17,.56); color: white; cursor: pointer; font-size: 22px; backdrop-filter: blur(8px); }
+.destination-carousel__arrow { position: absolute; z-index: 3; top: 50%; width: 44px; height: 54px; transform: translateY(-50%); border: 1px solid rgba(255,255,255,.35); background: rgba(35,20,17,.48); color: white; cursor: pointer; font: 300 34px/1 Georgia, serif; backdrop-filter: blur(8px); }
+.destination-carousel__arrow--prev { left: 16px; }
+.destination-carousel__arrow--next { right: 16px; }
+.destination-carousel__count { position: absolute; z-index: 3; right: 23px; bottom: 31px; color: #fff; font-size: 11px; letter-spacing: .12em; }
+.destination-carousel__thumbs { display: flex; gap: 8px; overflow-x: auto; padding: 12px; scrollbar-width: thin; }
+.destination-carousel__thumbs button { position: relative; flex: 0 0 92px; height: 72px; overflow: hidden; border: 2px solid transparent; background: #4c3932; cursor: pointer; opacity: .58; transition: opacity .2s, border-color .2s; }
+.destination-carousel__thumbs button.is-active { border-color: #d58d91; opacity: 1; }
+.destination-carousel__thumbs img { object-fit: cover; }
+.destination-carousel__thumbs span { position: absolute; z-index: 2; inset: auto 3px 3px; color: white; font-size: 8px; font-weight: 700; text-shadow: 0 1px 4px black; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .destination-card__top { display: flex; align-items: center; justify-content: space-between; }
 .destination-card__number { color: #cbb8ae; font: 400 24px/1 Georgia, serif; }
 .status { display: inline-flex; padding: 7px 10px; border-radius: 999px; font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
@@ -103,6 +116,11 @@
 .destination-modal h2 { font: 400 42px/1 Georgia, serif; margin: 12px 0 0; }
 .modal-close { position: absolute; right: 18px; top: 15px; border: 0; background: transparent; color: #896d65; font-size: 28px; cursor: pointer; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
+@media (max-width: 900px) {
+  .destination-card { grid-template-columns: 1fr; }
+  .destination-carousel__stage { min-height: 480px; }
+  .destination-carousel--empty { min-height: 360px; }
+}
 @media (max-width: 760px) {
   .manager-header { height: 70px; padding: 0 18px; }
   .manager-brand strong { font-size: 17px; }
@@ -112,11 +130,12 @@
   .manager-stats { padding: 0 20px; grid-template-columns: 1fr; }
   .manager-stats div { padding: 16px 20px; }
   .destination-grid { padding: 0 16px; grid-template-columns: 1fr; }
-  .destination-card { padding: 22px 18px; }
-  .destination-gallery { margin: -22px -18px 22px; }
-  .destination-photo { height: 190px; }
-  .destination-gallery--3 .destination-photo, .destination-gallery--4 .destination-photo { height: 125px; }
-  .destination-gallery--3 .destination-photo:first-child { height: 252px; }
+  .destination-card__body { padding: 24px 18px; }
+  .destination-carousel__stage { min-height: 360px; }
+  .destination-carousel__caption { left: 20px; right: 70px; bottom: 22px; }
+  .destination-carousel__caption strong { font-size: 30px; }
+  .destination-carousel__count { right: 18px; bottom: 22px; }
+  .destination-carousel__arrow { width: 38px; height: 46px; }
   .destination-meta { grid-template-columns: 1fr; }
   .login-card { padding: 34px 24px; }
   .destination-modal { padding: 32px 20px 24px; }

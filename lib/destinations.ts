@@ -9,7 +9,7 @@ type DestinationRow = {
 
 type ReactionRow = { destination_id: number; emoji: string; user_id: number; display_name: string };
 type MessageRow = { id: number; destination_id: number; body: string; created_at: string; user_id: number; username: string; display_name: string };
-type MediaRow = { id: number; destination_id: number; type: "photo" | "video"; value: string };
+type MediaRow = { id: number; destination_id: number; type: "photo" | "video"; value: string; label: string | null };
 
 export function listDestinations(currentUserId: number): Destination[] {
   const rows = db.prepare(`
@@ -25,7 +25,7 @@ export function listDestinations(currentUserId: number): Destination[] {
     SELECT m.id, m.destination_id, m.body, m.created_at, u.id AS user_id, u.username, u.display_name
     FROM messages m JOIN users u ON u.id = m.user_id ORDER BY m.created_at
   `).all() as MessageRow[];
-  const mediaRows = db.prepare("SELECT id, destination_id, type, value FROM destination_media ORDER BY created_at, id").all() as MediaRow[];
+  const mediaRows = db.prepare("SELECT id, destination_id, type, value, label FROM destination_media ORDER BY created_at, id").all() as MediaRow[];
 
   return rows.map((row) => {
     const grouped = new Map<string, Reaction>();
@@ -45,6 +45,7 @@ export function listDestinations(currentUserId: number): Destination[] {
     const createdBy: UserIdentity = { id: row.user_id, username: row.username, displayName: row.display_name };
     const media: DestinationMedia[] = mediaRows.filter((item) => item.destination_id === row.id).map((item) => ({
       id: item.id, type: item.type, url: item.type === "photo" ? `/api/uploads/${item.value}` : item.value,
+      label: item.label?.trim() || (item.type === "photo" ? "Foto perjalanan" : "Referensi video"),
     }));
     return {
       id: row.id, title: row.title, location: row.location, plannedDate: row.planned_date, status: row.status,
