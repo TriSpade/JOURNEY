@@ -27,6 +27,8 @@
 .destination-grid { max-width: 1180px; margin: 0 auto; padding: 0 24px; display: grid; grid-template-columns: 1fr; gap: 30px; }
 .destination-card { background: #fffaf6; border: 1px solid rgba(83,51,41,.1); display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(400px, .92fr); overflow: hidden; box-shadow: 0 24px 70px rgba(81,48,38,.1); }
 .destination-card__body { min-width: 0; padding: 38px; }
+.destination-card__social { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(260px, .42fr) minmax(0, 1fr); gap: 22px; align-items: start; padding: 22px 28px 28px; border-top: 1px solid #eaded6; background: #fffaf6; }
+.destination-card__social .reaction-row { border: 0; padding: 6px 0; }
 .destination-carousel { min-width: 0; display: flex; flex-direction: column; background: #2f211d; }
 .destination-carousel--empty { min-height: 580px; align-items: center; justify-content: center; color: #d7c4bb; text-align: center; padding: 40px; }
 .destination-carousel--empty span { color: #c2787d; font-size: 50px; }
@@ -118,6 +120,7 @@
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
 @media (max-width: 900px) {
   .destination-card { grid-template-columns: 1fr; }
+  .destination-card__social { grid-column: auto; grid-template-columns: 1fr; }
   .destination-carousel__stage { min-height: 480px; }
   .destination-carousel--empty { min-height: 360px; }
 }

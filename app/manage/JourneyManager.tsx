@@ -200,6 +200,9 @@ export default function JourneyManager() {
                 {destination.notes && <p className="destination-notes">{destination.notes}</p>}
                 {destination.videos.length > 0 && <div className="video-list">{destination.videos.map((video, videoIndex) => <div className="video-reference" key={video.id}><a href={video.url} target="_blank" rel="noreferrer"><span>▶</span><div><small>{video.label || `Referensi video ${videoIndex + 1}`}</small><strong>Buka inspirasi perjalanan ↗</strong></div></a><button onClick={() => removeMedia(video.id, "referensi video")} aria-label="Hapus referensi video">×</button></div>)}</div>}
                 <p className="destination-author">Ditambahkan oleh {destination.createdBy.displayName}</p>
+                <div className="destination-actions"><button onClick={() => openEdit(destination)}>Edit</button><button className="danger" onClick={() => removeDestination(destination)}>Hapus</button></div>
+              </div>
+              <div className="destination-card__social">
                 <div className="reaction-row">
                   {reactions.map((emoji) => {
                     const current = destination.reactions.find((item) => item.emoji === emoji);
@@ -214,7 +217,6 @@ export default function JourneyManager() {
                   </div>
                   <form className="message-form" onSubmit={(event) => sendMessage(event, destination.id)}><input value={drafts[destination.id] ?? ""} onChange={(event) => setDrafts((current) => ({ ...current, [destination.id]: event.target.value }))} placeholder="Tulis pesan…" maxLength={500} /><button type="submit" aria-label="Kirim pesan">→</button></form>
                 </div>
-                <div className="destination-actions"><button onClick={() => openEdit(destination)}>Edit</button><button className="danger" onClick={() => removeDestination(destination)}>Hapus</button></div>
               </div>
             </article>
           ))}
