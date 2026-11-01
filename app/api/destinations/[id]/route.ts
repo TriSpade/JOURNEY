@@ -13,10 +13,9 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   const title = cleanText(body.title, 120);
   if (!title) return NextResponse.json({ error: "Nama destinasi wajib diisi." }, { status: 400 });
   const status = validStatuses.has(body.status) ? body.status : "wishlist";
-  const budget = body.budget === "" || body.budget == null ? null : Math.max(0, Math.round(Number(body.budget)));
   const result = db.prepare(`
-    UPDATE destinations SET title=?, location=?, planned_date=?, status=?, budget=?, notes=?, updated_at=CURRENT_TIMESTAMP WHERE id=?
-  `).run(title, cleanText(body.location, 160), cleanText(body.plannedDate, 10) || null, status, Number.isFinite(budget) ? budget : null, cleanText(body.notes, 1500), id);
+    UPDATE destinations SET title=?, location=?, planned_date=?, status=?, notes=?, updated_at=CURRENT_TIMESTAMP WHERE id=?
+  `).run(title, cleanText(body.location, 160), cleanText(body.plannedDate, 10) || null, status, cleanText(body.notes, 1500), id);
   return result.changes ? NextResponse.json({ ok: true }) : NextResponse.json({ error: "Destinasi tidak ditemukan." }, { status: 404 });
 }
 

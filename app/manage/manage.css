@@ -34,7 +34,7 @@
 .status--visited { color: #3d6f5b; background: #deeee7; }
 .destination-card h2 { font: 400 34px/1.1 Georgia, serif; margin: 20px 0 8px; }
 .destination-location { color: #9a5c58; font-size: 13px; }
-.destination-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 24px 0; }
+.destination-meta { display: grid; grid-template-columns: 1fr; gap: 12px; margin: 24px 0; }
 .destination-meta span { padding: 14px; background: #f5ece5; display: grid; gap: 5px; }
 .destination-meta small { color: #9a847b; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
 .destination-meta strong { font-size: 13px; }

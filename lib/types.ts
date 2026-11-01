@@ -24,7 +24,6 @@ export type Destination = {
   location: string;
   plannedDate: string | null;
   status: "wishlist" | "planned" | "visited";
-  budget: number | null;
   notes: string;
   createdAt: string;
   updatedAt: string;

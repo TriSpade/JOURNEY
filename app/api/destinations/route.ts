@@ -18,10 +18,9 @@ export async function POST(request: NextRequest) {
   const title = cleanText(body.title, 120);
   if (!title) return NextResponse.json({ error: "Nama destinasi wajib diisi." }, { status: 400 });
   const status = validStatuses.has(body.status) ? body.status : "wishlist";
-  const budget = body.budget === "" || body.budget == null ? null : Math.max(0, Math.round(Number(body.budget)));
   const result = db.prepare(`
-    INSERT INTO destinations (title, location, planned_date, status, budget, notes, created_by)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
-  `).run(title, cleanText(body.location, 160), cleanText(body.plannedDate, 10) || null, status, Number.isFinite(budget) ? budget : null, cleanText(body.notes, 1500), auth.user.id);
+    INSERT INTO destinations (title, location, planned_date, status, notes, created_by)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `).run(title, cleanText(body.location, 160), cleanText(body.plannedDate, 10) || null, status, cleanText(body.notes, 1500), auth.user.id);
   return NextResponse.json({ id: Number(result.lastInsertRowid) }, { status: 201 });
 }

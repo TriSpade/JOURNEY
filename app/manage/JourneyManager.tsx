@@ -4,7 +4,7 @@ import { FormEvent, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import type { Destination, UserIdentity } from "@/lib/types";
 
-const emptyForm = { title: "", location: "", plannedDate: "", status: "wishlist", budget: "", notes: "" };
+const emptyForm = { title: "", location: "", plannedDate: "", status: "wishlist", notes: "" };
 const reactions = ["❤️", "😍", "✨", "👍", "🥰"];
 const statusLabels = { wishlist: "Wishlist", planned: "Direncanakan", visited: "Sudah dikunjungi" } as const;
 
@@ -18,11 +18,6 @@ async function request<T>(url: string, options?: RequestInit): Promise<T> {
 function formatDate(value: string | null) {
   if (!value) return "Tanggal fleksibel";
   return new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "long", year: "numeric" }).format(new Date(`${value}T00:00:00`));
-}
-
-function formatBudget(value: number | null) {
-  if (value == null) return "Belum ditentukan";
-  return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(value);
 }
 
 export default function JourneyManager() {
@@ -76,7 +71,7 @@ export default function JourneyManager() {
   const openCreate = () => { setEditingId(null); setForm(emptyForm); setShowForm(true); setError(""); };
   const openEdit = (destination: Destination) => {
     setEditingId(destination.id);
-    setForm({ title: destination.title, location: destination.location, plannedDate: destination.plannedDate ?? "", status: destination.status, budget: destination.budget?.toString() ?? "", notes: destination.notes });
+    setForm({ title: destination.title, location: destination.location, plannedDate: destination.plannedDate ?? "", status: destination.status, notes: destination.notes });
     setShowForm(true); setError("");
   };
 
@@ -158,7 +153,7 @@ export default function JourneyManager() {
             <article className="destination-card" key={destination.id}>
               <div className="destination-card__top"><span className={`status status--${destination.status}`}>{statusLabels[destination.status]}</span><span className="destination-card__number">{String(index + 1).padStart(2, "0")}</span></div>
               <h2>{destination.title}</h2><p className="destination-location">⌖ {destination.location || "Lokasi belum ditentukan"}</p>
-              <div className="destination-meta"><span><small>Tanggal</small><strong>{formatDate(destination.plannedDate)}</strong></span><span><small>Anggaran</small><strong>{formatBudget(destination.budget)}</strong></span></div>
+              <div className="destination-meta"><span><small>Tanggal</small><strong>{formatDate(destination.plannedDate)}</strong></span></div>
               {destination.notes && <p className="destination-notes">{destination.notes}</p>}
               <p className="destination-author">Ditambahkan oleh {destination.createdBy.displayName}</p>
               <div className="reaction-row">
@@ -180,7 +175,7 @@ export default function JourneyManager() {
           ))}
         </section>
       )}
-      {showForm && <div className="modal-backdrop" onMouseDown={(event) => { if (event.currentTarget === event.target) setShowForm(false); }}><section className="destination-modal" role="dialog" aria-modal="true" aria-labelledby="destination-form-title"><button className="modal-close" onClick={() => setShowForm(false)} aria-label="Tutup">×</button><p className="manager-eyebrow">Our next chapter</p><h2 id="destination-form-title">{editingId ? "Edit destinasi" : "Destinasi baru"}</h2><form onSubmit={saveDestination}><label>Nama destinasi<input value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} required maxLength={120} placeholder="Contoh: Yogyakarta" /></label><label>Lokasi<input value={form.location} onChange={(event) => setForm({ ...form, location: event.target.value })} maxLength={160} placeholder="Kota atau tempat spesifik" /></label><div className="form-row"><label>Tanggal<input type="date" value={form.plannedDate} onChange={(event) => setForm({ ...form, plannedDate: event.target.value })} /></label><label>Status<select value={form.status} onChange={(event) => setForm({ ...form, status: event.target.value })}><option value="wishlist">Wishlist</option><option value="planned">Direncanakan</option><option value="visited">Sudah dikunjungi</option></select></label></div><label>Anggaran<input type="number" min="0" step="1000" value={form.budget} onChange={(event) => setForm({ ...form, budget: event.target.value })} placeholder="Contoh: 2500000" /></label><label>Catatan<textarea value={form.notes} onChange={(event) => setForm({ ...form, notes: event.target.value })} maxLength={1500} rows={4} placeholder="Hal yang ingin dilakukan, tempat makan, atau catatan kecil…" /></label>{error && <p className="form-error">{error}</p>}<button className="manager-primary" disabled={busy} type="submit">{busy ? "Menyimpan…" : editingId ? "Simpan perubahan" : "Tambahkan ke perjalanan"}</button></form></section></div>}
+      {showForm && <div className="modal-backdrop" onMouseDown={(event) => { if (event.currentTarget === event.target) setShowForm(false); }}><section className="destination-modal" role="dialog" aria-modal="true" aria-labelledby="destination-form-title"><button className="modal-close" onClick={() => setShowForm(false)} aria-label="Tutup">×</button><p className="manager-eyebrow">Our next chapter</p><h2 id="destination-form-title">{editingId ? "Edit destinasi" : "Destinasi baru"}</h2><form onSubmit={saveDestination}><label>Nama destinasi<input value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} required maxLength={120} placeholder="Contoh: Yogyakarta" /></label><label>Lokasi<input value={form.location} onChange={(event) => setForm({ ...form, location: event.target.value })} maxLength={160} placeholder="Kota atau tempat spesifik" /></label><div className="form-row"><label>Tanggal<input type="date" value={form.plannedDate} onChange={(event) => setForm({ ...form, plannedDate: event.target.value })} /></label><label>Status<select value={form.status} onChange={(event) => setForm({ ...form, status: event.target.value })}><option value="wishlist">Wishlist</option><option value="planned">Direncanakan</option><option value="visited">Sudah dikunjungi</option></select></label></div><label>Catatan<textarea value={form.notes} onChange={(event) => setForm({ ...form, notes: event.target.value })} maxLength={1500} rows={4} placeholder="Hal yang ingin dilakukan, tempat makan, atau catatan kecil…" /></label>{error && <p className="form-error">{error}</p>}<button className="manager-primary" disabled={busy} type="submit">{busy ? "Menyimpan…" : editingId ? "Simpan perubahan" : "Tambahkan ke perjalanan"}</button></form></section></div>}
     </main>
   );
 }
