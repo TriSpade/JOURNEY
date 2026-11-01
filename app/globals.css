@@ -86,7 +86,7 @@ h1 i,h2 i { color:var(--rose); font-weight:400; }
 .story-card__eyebrow { margin:35px 0 13px; color:var(--rose); font-size:8px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; }
 .story-card h3 { max-width:280px; margin-bottom:18px; font-size:27px; line-height:1.05; }
 .story-card>p:not(.story-card__eyebrow) { max-width:290px; color:var(--muted); font-size:11px; line-height:1.85; }
-.story-card__link { margin-top:17px; padding:0 0 5px; border:0; border-bottom:1px solid rgba(75,52,47,.35); background:none; font-size:8px; font-weight:700; letter-spacing:.15em; text-transform:uppercase; cursor:pointer; }
+.story-card__link { display:inline-block; margin-top:17px; padding:0 0 5px; border:0; border-bottom:1px solid rgba(75,52,47,.35); background:none; font-size:8px; font-weight:700; letter-spacing:.15em; text-transform:uppercase; cursor:pointer; }
 .story-card__link span { margin-left:15px; }
 .story-card__soon { position:absolute; right:28px; bottom:62px; color:rgba(199,144,139,.7); font-family:var(--font-display),serif; font-size:50px; font-style:italic; transform:rotate(-8deg); }
 
@@ -126,8 +126,8 @@ h1 i,h2 i { color:var(--rose); font-weight:400; }
 .bucket-row h3 { margin:0 0 3px; font-size:24px; }
 .bucket-row p { margin:0; color:var(--muted); font-size:8px; letter-spacing:.1em; text-transform:uppercase; }
 .bucket-row__tag { justify-self:start; padding:7px 12px; border-radius:20px; color:var(--rose); background:#f4e6e1; font-size:7px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; }
-.bucket-row button { display:grid; width:36px; height:36px; place-items:center; border:1px solid var(--line); border-radius:50%; background:transparent; cursor:pointer; transition:background .2s ease,color .2s ease; }
-.bucket-row button:hover { color:white; background:var(--cocoa); }
+.bucket-row>a { display:grid; width:36px; height:36px; place-items:center; border:1px solid var(--line); border-radius:50%; background:transparent; cursor:pointer; transition:background .2s ease,color .2s ease; }
+.bucket-row>a:hover { color:white; background:var(--cocoa); }
 .bucket__more { margin-top:32px; color:var(--muted); font-family:var(--font-display),serif; font-size:16px; font-style:italic; text-align:center; }
 .bucket__more span { color:var(--rose); }
 

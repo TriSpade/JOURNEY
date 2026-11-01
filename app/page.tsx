@@ -3,9 +3,9 @@ import IntroExperience from "./components/IntroExperience";
 import MusicPlayer from "./components/MusicPlayer";
 
 const storyMoments = [
-  { number: "01", eyebrow: "Awal cerita", title: "Saat semesta mempertemukan kita", text: "Dari percakapan sederhana, tumbuh sebuah tempat pulang yang selalu ingin kita jaga bersama." },
-  { number: "02", eyebrow: "Hari-hari kecil", title: "Bahagia dalam hal yang sederhana", text: "Tawa, cerita larut malam, dan segala hal kecil yang diam-diam menjadi kenangan paling berharga." },
-  { number: "03", eyebrow: "Bab berikutnya", title: "Bandung, kita akan datang", text: "Sebuah perjalanan baru untuk udara yang sejuk, jalan yang panjang, dan waktu yang hanya milik kita." },
+  { number: "01", eyebrow: "Pagi pertama", title: "Memulai hari di Kawah Putih", text: "Kabut, udara dingin, dan Ontang-Anting menjadi pembuka perjalanan yang sudah lama kita bayangkan.", href: "https://www.instagram.com/reels/DHvu2qhyZXz/", provider: "Lihat referensi Instagram" },
+  { number: "02", eyebrow: "Siang berdua", title: "Mencari hangat di Rengganis", text: "Jembatan gantung, Keranjang Sultan, dan waktu yang kita sisihkan untuk menikmati perjalanan tanpa terburu-buru.", href: "https://www.tiktok.com/@eunike_octaviani/video/7667905164656839956", provider: "Putar referensi TikTok" },
+  { number: "03", eyebrow: "Penutup hari", title: "Pulang membawa cerita dari Braga", text: "Setelah perjalanan panjang dari Ciwidey, kita menutup hari dengan makan malam dan lampu-lampu kota Bandung.", href: "https://www.tiktok.com/@mainbandung.yuk/video/7701695826116054290", provider: "Putar referensi TikTok" },
 ];
 
 const tripDetails = [
@@ -15,9 +15,12 @@ const tripDetails = [
 ];
 
 const bucketItems = [
-  { title: "Menyambut pagi di kebun teh", meta: "Pangalengan", tag: "Alam" },
-  { title: "Makan malam dengan city lights", meta: "Bandung Utara", tag: "Kuliner" },
-  { title: "Berburu foto di jalanan kota", meta: "Braga", tag: "Kenangan" },
+  { title: "Kawah Putih", meta: "06.00–10.30 · Rancabali, Ciwidey", tag: "Instagram", href: "https://www.instagram.com/reels/DHvu2qhyZXz/" },
+  { title: "Sunan Ibu", meta: "Kawasan Kawah Putih, Ciwidey", tag: "TikTok", href: "https://www.tiktok.com/@andinostory/video/7511990098645306631" },
+  { title: "Kawah Rengganis", meta: "13.30–15.00 · Rancabali, Ciwidey", tag: "TikTok", href: "https://www.tiktok.com/@eunike_octaviani/video/7667905164656839956" },
+  { title: "Kebun Teh Rancabali", meta: "15.00–15.30 · Rancabali, Ciwidey", tag: "TikTok", href: "https://www.tiktok.com/@neorentalmotorbdg/video/7276414435416100101" },
+  { title: "Kebun Stroberi Ciwidey", meta: "16.15–16.45 · Jalur Ciwidey", tag: "Instagram", href: "https://www.instagram.com/reels/C6YBhfPv2R2/" },
+  { title: "Braga", meta: "19.00–19.45 · Bandung", tag: "TikTok", href: "https://www.tiktok.com/@mainbandung.yuk/video/7701695826116054290" },
 ];
 
 function HeartMark({ small = false }: { small?: boolean }) {
@@ -84,17 +87,17 @@ export default function Home() {
         <div className="shell">
           <div className="section-heading section-heading--center reveal-on-scroll">
             <HeartMark />
-            <p className="eyebrow"><span /> Our love story <span /></p>
-            <h2 id="story-title">Kisah yang kita tulis,<br /><i>perlahan dan selamanya.</i></h2>
-            <p>Setiap pertemuan, tawa, dan perjalanan adalah halaman yang tidak ingin kita lewatkan.</p>
+            <p className="eyebrow"><span /> Bab pertama kita <span /></p>
+            <h2 id="story-title">Satu hari di Bandung,<br /><i>enam cerita untuk dibawa pulang.</i></h2>
+            <p>Kisah ini belum menjadi kenangan. Untuk sekarang, ia adalah rencana kecil yang sedang kita siapkan bersama.</p>
           </div>
           <div className="story__timeline" id="memories">
             {storyMoments.map((moment, index) => (
               <article className="story-card reveal-on-scroll" key={moment.number}>
                 <div className="story-card__top"><span className="story-card__number">{moment.number}</span><span className="story-card__dot" aria-hidden="true" /></div>
                 <p className="story-card__eyebrow">{moment.eyebrow}</p><h3>{moment.title}</h3><p>{moment.text}</p>
-                <button type="button" className="story-card__link" aria-label={`Baca ${moment.title}`}>Baca cerita <span>→</span></button>
-                {index === 2 && <span className="story-card__soon">Soon</span>}
+                <a className="story-card__link" href={moment.href} target="_blank" rel="noreferrer" aria-label={`${moment.provider}: ${moment.title}`}>{moment.provider} <span>↗</span></a>
+                {index === 2 && <span className="story-card__soon">15.11</span>}
               </article>
             ))}
           </div>
@@ -121,15 +124,15 @@ export default function Home() {
 
       <section className="bucket section" id="bucket" aria-labelledby="bucket-title">
         <div className="shell">
-          <div className="bucket__header reveal-on-scroll"><div><p className="eyebrow"><span /> Our bucket list</p><h2 id="bucket-title">Hal-hal kecil yang ingin<br /><i>kita lakukan bersama.</i></h2></div><p>Daftar mimpi yang menunggu untuk dicentang—satu per satu, berdua.</p></div>
+          <div className="bucket__header reveal-on-scroll"><div><p className="eyebrow"><span /> Referensi perjalanan</p><h2 id="bucket-title">Enam tempat untuk<br /><i>satu hari milik kita.</i></h2></div><p>Setiap destinasi memiliki referensi video yang bisa dibuka sambil menyusun rencana bersama.</p></div>
           <div className="bucket__list">
             {bucketItems.map((item, index) => (
               <article className="bucket-row reveal-on-scroll" key={item.title}>
-                <span className="bucket-row__index">0{index + 1}</span><span className="bucket-row__check" aria-hidden="true" /><div><h3>{item.title}</h3><p>{item.meta}</p></div><span className="bucket-row__tag">{item.tag}</span><button type="button" aria-label={`Lihat ${item.title}`}>↗</button>
+                <span className="bucket-row__index">0{index + 1}</span><span className="bucket-row__check" aria-hidden="true" /><div><h3>{item.title}</h3><p>{item.meta}</p></div><span className="bucket-row__tag">{item.tag}</span><a href={item.href} target="_blank" rel="noreferrer" aria-label={`Buka referensi ${item.title}`}>↗</a>
               </article>
             ))}
           </div>
-          <p className="bucket__more">dan masih banyak mimpi lainnya <span>♡</span></p>
+          <p className="bucket__more"><a href="/manage">Buka planner untuk memberi reaction dan pesan <span>♡</span></a></p>
         </div>
       </section>
 
