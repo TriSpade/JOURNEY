@@ -1,6 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { createContext, type ReactNode, useContext, useState } from "react";
+
+type ReferenceVideoContextValue = {
+  openId: string | null;
+  setOpenId: (id: string | null) => void;
+};
+
+const ReferenceVideoContext = createContext<ReferenceVideoContextValue | null>(null);
+
+export function ReferenceVideoProvider({ children }: { children: ReactNode }) {
+  const [openId, setOpenId] = useState<string | null>(null);
+  return <ReferenceVideoContext.Provider value={{ openId, setOpenId }}>{children}</ReferenceVideoContext.Provider>;
+}
 
 function getEmbed(url: string) {
   const tiktok = url.match(/tiktok\.com\/@[^/]+\/video\/(\d+)/i);
@@ -22,7 +34,10 @@ type InlineVideoReferenceProps = {
 };
 
 export default function InlineVideoReference({ url, label, title, variant = "story" }: InlineVideoReferenceProps) {
-  const [open, setOpen] = useState(false);
+  const context = useContext(ReferenceVideoContext);
+  const fallbackState = useState(false);
+  const referenceId = `${variant}:${title}`;
+  const open = context ? context.openId === referenceId : fallbackState[0];
   const embedUrl = getEmbed(url);
 
   if (!embedUrl) return null;
@@ -34,7 +49,7 @@ export default function InlineVideoReference({ url, label, title, variant = "sto
         className={variant === "story" ? "story-card__link" : "inline-reference__round"}
         aria-expanded={open}
         aria-label={open ? `Tutup referensi ${title}` : `Putar referensi ${title}`}
-        onClick={() => setOpen((value) => !value)}
+        onClick={() => context ? context.setOpenId(open ? null : referenceId) : fallbackState[1]((value) => !value)}
       >
         {variant === "story" ? <>{open ? "Tutup video" : label} <span>{open ? "↑" : "▶"}</span></> : <span>{open ? "↑" : "▶"}</span>}
       </button>

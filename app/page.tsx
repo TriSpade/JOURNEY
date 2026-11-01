@@ -1,5 +1,5 @@
 import Countdown from "./components/Countdown";
-import InlineVideoReference from "./components/InlineVideoReference";
+import InlineVideoReference, { ReferenceVideoProvider } from "./components/InlineVideoReference";
 import IntroExperience from "./components/IntroExperience";
 import MusicPlayer from "./components/MusicPlayer";
 
@@ -37,7 +37,7 @@ function HeartMark({ small = false }: { small?: boolean }) {
 
 export default function Home() {
   return (
-    <main>
+    <ReferenceVideoProvider><main>
       <IntroExperience />
       <section className="hero" id="home">
         <div className="hero__image" aria-hidden="true" />
@@ -144,6 +144,6 @@ export default function Home() {
 
       <footer className="footer"><div className="shell footer__inner"><a className="brand brand--footer" href="#home"><HeartMark small /><span><strong>Our Journey</strong><em>Dimas &amp; Anita</em></span></a><p>Dibuat dengan cinta, untuk semua cerita yang belum terjadi.</p><a href="/manage" className="back-top">Buka planner <span>↗</span></a></div></footer>
       <MusicPlayer />
-    </main>
+    </main></ReferenceVideoProvider>
   );
 }
