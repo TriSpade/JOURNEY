@@ -18,6 +18,12 @@ export type JourneyMessage = {
   user: UserIdentity;
 };
 
+export type DestinationMedia = {
+  id: number;
+  type: "photo" | "video";
+  url: string;
+};
+
 export type Destination = {
   id: number;
   title: string;
@@ -25,8 +31,8 @@ export type Destination = {
   plannedDate: string | null;
   status: "wishlist" | "planned" | "visited";
   notes: string;
-  photoUrl: string | null;
-  videoUrl: string | null;
+  photos: DestinationMedia[];
+  videos: DestinationMedia[];
   createdAt: string;
   updatedAt: string;
   createdBy: UserIdentity;

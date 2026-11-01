@@ -59,6 +59,22 @@ function openDatabase() {
   const destinationColumns = database.pragma("table_info(destinations)") as Array<{ name: string }>;
   if (!destinationColumns.some((column) => column.name === "photo_path")) database.exec("ALTER TABLE destinations ADD COLUMN photo_path TEXT");
   if (!destinationColumns.some((column) => column.name === "video_url")) database.exec("ALTER TABLE destinations ADD COLUMN video_url TEXT");
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS destination_media (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      destination_id INTEGER NOT NULL REFERENCES destinations(id) ON DELETE CASCADE,
+      type TEXT NOT NULL CHECK(type IN ('photo', 'video')),
+      value TEXT NOT NULL,
+      created_by INTEGER NOT NULL REFERENCES users(id),
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE(destination_id, type, value)
+    );
+    CREATE INDEX IF NOT EXISTS idx_destination_media_destination ON destination_media(destination_id, created_at);
+    INSERT OR IGNORE INTO destination_media (destination_id, type, value, created_by, created_at)
+      SELECT id, 'photo', photo_path, created_by, created_at FROM destinations WHERE photo_path IS NOT NULL AND photo_path != '';
+    INSERT OR IGNORE INTO destination_media (destination_id, type, value, created_by, created_at)
+      SELECT id, 'video', video_url, created_by, created_at FROM destinations WHERE video_url IS NOT NULL AND video_url != '';
+  `);
 
 function hashPassword(password: string) {
   const salt = randomBytes(16).toString("hex");

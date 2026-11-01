@@ -12,7 +12,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   const name = (await params).name;
   const path = safeUploadPath(name);
   if (!path) return NextResponse.json({ error: "File tidak valid." }, { status: 400 });
-  const referenced = db.prepare("SELECT 1 FROM destinations WHERE photo_path = ?").get(name);
+  const referenced = db.prepare("SELECT 1 FROM destination_media WHERE type='photo' AND value=?").get(name);
   if (!referenced) return NextResponse.json({ error: "Foto tidak ditemukan." }, { status: 404 });
   try {
     const data = await readFile(path);

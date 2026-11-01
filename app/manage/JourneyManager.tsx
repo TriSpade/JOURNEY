@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Destination, UserIdentity } from "@/lib/types";
 
-const emptyForm = { title: "", location: "", plannedDate: "", status: "wishlist", notes: "", videoUrl: "" };
+const emptyForm = { title: "", location: "", plannedDate: "", status: "wishlist", notes: "", videoUrls: "" };
 const reactions = ["❤️", "😍", "✨", "👍", "🥰"];
 const statusLabels = { wishlist: "Wishlist", planned: "Direncanakan", visited: "Sudah dikunjungi" } as const;
 
@@ -30,7 +30,7 @@ export default function JourneyManager() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState(emptyForm);
-  const [photo, setPhoto] = useState<File | null>(null);
+  const [photos, setPhotos] = useState<File[]>([]);
   const [drafts, setDrafts] = useState<Record<number, string>>({});
 
   const loadDestinations = useCallback(async () => {
@@ -70,27 +70,28 @@ export default function JourneyManager() {
     setUser(null); setDestinations([]);
   };
 
-  const openCreate = () => { setEditingId(null); setForm(emptyForm); setPhoto(null); setShowForm(true); setError(""); };
+  const openCreate = () => { setEditingId(null); setForm(emptyForm); setPhotos([]); setShowForm(true); setError(""); };
   const openEdit = (destination: Destination) => {
     setEditingId(destination.id);
-    setForm({ title: destination.title, location: destination.location, plannedDate: destination.plannedDate ?? "", status: destination.status, notes: destination.notes, videoUrl: destination.videoUrl ?? "" });
-    setPhoto(null);
+    setForm({ title: destination.title, location: destination.location, plannedDate: destination.plannedDate ?? "", status: destination.status, notes: destination.notes, videoUrls: destination.videos.map((video) => video.url).join("\n") });
+    setPhotos([]);
     setShowForm(true); setError("");
   };
 
   const saveDestination = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault(); setBusy(true); setError("");
     try {
-      const result = await request<{ id?: number }>(editingId ? `/api/destinations/${editingId}` : "/api/destinations", { method: editingId ? "PATCH" : "POST", body: JSON.stringify(form) });
+      const payload = { ...form, videoUrls: form.videoUrls.split(/\r?\n/).map((url) => url.trim()).filter(Boolean) };
+      const result = await request<{ id?: number }>(editingId ? `/api/destinations/${editingId}` : "/api/destinations", { method: editingId ? "PATCH" : "POST", body: JSON.stringify(payload) });
       const destinationId = editingId ?? result.id;
-      if (photo && destinationId) {
+      if (photos.length && destinationId) {
         const photoData = new FormData();
-        photoData.append("photo", photo);
-        const upload = await fetch(`/api/destinations/${destinationId}/photo`, { method: "POST", body: photoData });
+        photos.forEach((photo) => photoData.append("photos", photo));
+        const upload = await fetch(`/api/destinations/${destinationId}/photos`, { method: "POST", body: photoData });
         const uploadResult = await upload.json().catch(() => ({}));
         if (!upload.ok) throw new Error(uploadResult.error ?? "Gagal mengunggah foto.");
       }
-      setShowForm(false); setForm(emptyForm); setPhoto(null); setEditingId(null); await loadDestinations();
+      setShowForm(false); setForm(emptyForm); setPhotos([]); setEditingId(null); await loadDestinations();
     } catch (reason) { setError(reason instanceof Error ? reason.message : "Gagal menyimpan destinasi."); }
     finally { setBusy(false); }
   };
@@ -120,9 +121,9 @@ export default function JourneyManager() {
     await loadDestinations();
   };
 
-  const removePhoto = async (destinationId: number) => {
-    if (!window.confirm("Hapus foto dari destinasi ini?")) return;
-    await request(`/api/destinations/${destinationId}/photo`, { method: "DELETE" });
+  const removeMedia = async (mediaId: number, label: string) => {
+    if (!window.confirm(`Hapus ${label} ini?`)) return;
+    await request(`/api/media/${mediaId}`, { method: "DELETE" });
     await loadDestinations();
   };
 
@@ -168,12 +169,12 @@ export default function JourneyManager() {
         <section className="destination-grid">
           {destinations.map((destination, index) => (
             <article className="destination-card" key={destination.id}>
-              {destination.photoUrl && <div className="destination-photo"><Image src={destination.photoUrl} alt={`Foto ${destination.title}`} fill sizes="(max-width: 760px) 100vw, 50vw" unoptimized /><button onClick={() => removePhoto(destination.id)} aria-label="Hapus foto">×</button></div>}
+              {destination.photos.length > 0 && <div className={`destination-gallery destination-gallery--${Math.min(destination.photos.length, 4)}`}>{destination.photos.map((photo, photoIndex) => <div className="destination-photo" key={photo.id}><Image src={photo.url} alt={`Foto ${destination.title} ${photoIndex + 1}`} fill sizes="(max-width: 760px) 100vw, 25vw" unoptimized /><button onClick={() => removeMedia(photo.id, "foto")} aria-label="Hapus foto">×</button></div>)}</div>}
               <div className="destination-card__top"><span className={`status status--${destination.status}`}>{statusLabels[destination.status]}</span><span className="destination-card__number">{String(index + 1).padStart(2, "0")}</span></div>
               <h2>{destination.title}</h2><p className="destination-location">⌖ {destination.location || "Lokasi belum ditentukan"}</p>
               <div className="destination-meta"><span><small>Tanggal</small><strong>{formatDate(destination.plannedDate)}</strong></span></div>
               {destination.notes && <p className="destination-notes">{destination.notes}</p>}
-              {destination.videoUrl && <a className="video-reference" href={destination.videoUrl} target="_blank" rel="noreferrer"><span>▶</span><div><small>Referensi video</small><strong>Buka inspirasi perjalanan ↗</strong></div></a>}
+              {destination.videos.length > 0 && <div className="video-list">{destination.videos.map((video, videoIndex) => <div className="video-reference" key={video.id}><a href={video.url} target="_blank" rel="noreferrer"><span>▶</span><div><small>Referensi video {videoIndex + 1}</small><strong>Buka inspirasi perjalanan ↗</strong></div></a><button onClick={() => removeMedia(video.id, "referensi video")} aria-label="Hapus referensi video">×</button></div>)}</div>}
               <p className="destination-author">Ditambahkan oleh {destination.createdBy.displayName}</p>
               <div className="reaction-row">
                 {reactions.map((emoji) => {
@@ -194,7 +195,7 @@ export default function JourneyManager() {
           ))}
         </section>
       )}
-      {showForm && <div className="modal-backdrop" onMouseDown={(event) => { if (event.currentTarget === event.target) setShowForm(false); }}><section className="destination-modal" role="dialog" aria-modal="true" aria-labelledby="destination-form-title"><button className="modal-close" onClick={() => setShowForm(false)} aria-label="Tutup">×</button><p className="manager-eyebrow">Our next chapter</p><h2 id="destination-form-title">{editingId ? "Edit destinasi" : "Destinasi baru"}</h2><form onSubmit={saveDestination}><label>Nama destinasi<input value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} required maxLength={120} placeholder="Contoh: Yogyakarta" /></label><label>Lokasi<input value={form.location} onChange={(event) => setForm({ ...form, location: event.target.value })} maxLength={160} placeholder="Kota atau tempat spesifik" /></label><div className="form-row"><label>Tanggal<input type="date" value={form.plannedDate} onChange={(event) => setForm({ ...form, plannedDate: event.target.value })} /></label><label>Status<select value={form.status} onChange={(event) => setForm({ ...form, status: event.target.value })}><option value="wishlist">Wishlist</option><option value="planned">Direncanakan</option><option value="visited">Sudah dikunjungi</option></select></label></div><label>Foto destinasi<input className="file-input" type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => setPhoto(event.target.files?.[0] ?? null)} /><small className="field-help">JPG, PNG, atau WebP · maksimal 8 MB{photo ? ` · ${photo.name}` : ""}</small></label><label>Referensi video<input type="url" value={form.videoUrl} onChange={(event) => setForm({ ...form, videoUrl: event.target.value })} maxLength={500} placeholder="https://youtube.com/..." /><small className="field-help">Tempel link YouTube, TikTok, Instagram, atau video lainnya.</small></label><label>Catatan<textarea value={form.notes} onChange={(event) => setForm({ ...form, notes: event.target.value })} maxLength={1500} rows={4} placeholder="Hal yang ingin dilakukan, tempat makan, atau catatan kecil…" /></label>{error && <p className="form-error">{error}</p>}<button className="manager-primary" disabled={busy} type="submit">{busy ? "Menyimpan…" : editingId ? "Simpan perubahan" : "Tambahkan ke perjalanan"}</button></form></section></div>}
+      {showForm && <div className="modal-backdrop" onMouseDown={(event) => { if (event.currentTarget === event.target) setShowForm(false); }}><section className="destination-modal" role="dialog" aria-modal="true" aria-labelledby="destination-form-title"><button className="modal-close" onClick={() => setShowForm(false)} aria-label="Tutup">×</button><p className="manager-eyebrow">Our next chapter</p><h2 id="destination-form-title">{editingId ? "Edit destinasi" : "Destinasi baru"}</h2><form onSubmit={saveDestination}><label>Nama destinasi<input value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} required maxLength={120} placeholder="Contoh: Yogyakarta" /></label><label>Lokasi<input value={form.location} onChange={(event) => setForm({ ...form, location: event.target.value })} maxLength={160} placeholder="Kota atau tempat spesifik" /></label><div className="form-row"><label>Tanggal<input type="date" value={form.plannedDate} onChange={(event) => setForm({ ...form, plannedDate: event.target.value })} /></label><label>Status<select value={form.status} onChange={(event) => setForm({ ...form, status: event.target.value })}><option value="wishlist">Wishlist</option><option value="planned">Direncanakan</option><option value="visited">Sudah dikunjungi</option></select></label></div><label>Foto destinasi<input className="file-input" type="file" multiple accept="image/jpeg,image/png,image/webp" onChange={(event) => setPhotos(Array.from(event.target.files ?? []))} /><small className="field-help">Bisa pilih beberapa foto · JPG, PNG, atau WebP · maksimal 8 MB per foto · maksimal 12 foto{photos.length ? ` · ${photos.length} foto dipilih` : ""}</small></label><label>Referensi video<textarea value={form.videoUrls} onChange={(event) => setForm({ ...form, videoUrls: event.target.value })} maxLength={10000} rows={3} placeholder={"https://youtube.com/...\nhttps://tiktok.com/..."} /><small className="field-help">Satu link per baris · maksimal 20 link.</small></label><label>Catatan<textarea value={form.notes} onChange={(event) => setForm({ ...form, notes: event.target.value })} maxLength={1500} rows={4} placeholder="Hal yang ingin dilakukan, tempat makan, atau catatan kecil…" /></label>{error && <p className="form-error">{error}</p>}<button className="manager-primary" disabled={busy} type="submit">{busy ? "Menyimpan…" : editingId ? "Simpan perubahan" : "Tambahkan ke perjalanan"}</button></form></section></div>}
     </main>
   );
 }
