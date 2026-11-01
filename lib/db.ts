@@ -56,6 +56,10 @@ function openDatabase() {
   CREATE INDEX IF NOT EXISTS idx_reactions_destination ON reactions(destination_id);
   `);
 
+  const destinationColumns = database.pragma("table_info(destinations)") as Array<{ name: string }>;
+  if (!destinationColumns.some((column) => column.name === "photo_path")) database.exec("ALTER TABLE destinations ADD COLUMN photo_path TEXT");
+  if (!destinationColumns.some((column) => column.name === "video_url")) database.exec("ALTER TABLE destinations ADD COLUMN video_url TEXT");
+
 function hashPassword(password: string) {
   const salt = randomBytes(16).toString("hex");
   const hash = scryptSync(password, salt, 64).toString("hex");

@@ -25,6 +25,8 @@ export type Destination = {
   plannedDate: string | null;
   status: "wishlist" | "planned" | "visited";
   notes: string;
+  photoUrl: string | null;
+  videoUrl: string | null;
   createdAt: string;
   updatedAt: string;
   createdBy: UserIdentity;

@@ -26,6 +26,9 @@
 .manager-stats span { color: #79635c; font-size: 13px; }
 .destination-grid { max-width: 1180px; margin: 0 auto; padding: 0 24px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
 .destination-card { background: #fffaf6; border: 1px solid rgba(83,51,41,.1); padding: 28px; box-shadow: 0 18px 50px rgba(81,48,38,.07); }
+.destination-photo { position: relative; height: 260px; margin: -28px -28px 26px; overflow: hidden; background: #eadfd8; }
+.destination-photo img { object-fit: cover; }
+.destination-photo button { position: absolute; z-index: 2; right: 12px; top: 12px; width: 34px; height: 34px; border: 0; border-radius: 50%; background: rgba(46,27,22,.72); color: white; cursor: pointer; font-size: 20px; backdrop-filter: blur(8px); }
 .destination-card__top { display: flex; align-items: center; justify-content: space-between; }
 .destination-card__number { color: #cbb8ae; font: 400 24px/1 Georgia, serif; }
 .status { display: inline-flex; padding: 7px 10px; border-radius: 999px; font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
@@ -39,6 +42,12 @@
 .destination-meta small { color: #9a847b; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
 .destination-meta strong { font-size: 13px; }
 .destination-notes { color: #725e56; line-height: 1.7; white-space: pre-wrap; font-size: 14px; }
+.video-reference { display: flex; align-items: center; gap: 12px; color: #684138; background: #f1e3db; padding: 13px 14px; margin: 16px 0; text-decoration: none; transition: transform .2s, background .2s; }
+.video-reference:hover { transform: translateY(-2px); background: #ead5cb; }
+.video-reference > span { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; color: #fff; background: #a95057; font-size: 11px; }
+.video-reference div { display: grid; gap: 3px; }
+.video-reference small { color: #9d7d73; font-size: 9px; letter-spacing: .12em; text-transform: uppercase; }
+.video-reference strong { font-size: 12px; }
 .destination-author { color: #aa9288; font-size: 11px; margin: 18px 0; }
 .reaction-row { display: flex; flex-wrap: wrap; gap: 7px; padding: 16px 0; border-top: 1px solid #eee1d9; }
 .reaction { min-width: 40px; height: 34px; border: 1px solid #e3d4cc; background: #fff; border-radius: 999px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; transition: .18s; }
@@ -77,6 +86,9 @@
 .manager input, .manager select, .manager textarea { width: 100%; border: 1px solid #ddcec5; background: #fff; color: #3d2c26; padding: 13px 14px; outline: none; border-radius: 0; }
 .manager input:focus, .manager select:focus, .manager textarea:focus { border-color: #a9575d; box-shadow: 0 0 0 3px rgba(169,87,93,.08); }
 .manager textarea { resize: vertical; }
+.file-input { padding: 10px !important; background: #f8f1ec !important; }
+.file-input::file-selector-button { border: 0; background: #704238; color: white; padding: 9px 12px; margin-right: 12px; cursor: pointer; }
+.field-help { color: #a0877e; font-weight: 400; line-height: 1.45; }
 .form-error { color: #9e2631 !important; background: #fae5e6; border: 1px solid #efc7ca; padding: 11px 13px; margin: 0; font-size: 12px; line-height: 1.5; }
 .modal-backdrop { position: fixed; inset: 0; z-index: 50; background: rgba(39,23,19,.62); display: grid; place-items: center; padding: 24px; overflow: auto; }
 .destination-modal { position: relative; width: min(100%, 610px); background: #fffaf6; padding: 38px; box-shadow: 0 30px 100px rgba(22,10,8,.32); }
@@ -93,6 +105,7 @@
   .manager-stats div { padding: 16px 20px; }
   .destination-grid { padding: 0 16px; grid-template-columns: 1fr; }
   .destination-card { padding: 22px 18px; }
+  .destination-photo { height: 220px; margin: -22px -18px 22px; }
   .destination-meta { grid-template-columns: 1fr; }
   .login-card { padding: 34px 24px; }
   .destination-modal { padding: 32px 20px 24px; }

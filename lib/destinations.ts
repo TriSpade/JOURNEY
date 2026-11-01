@@ -3,7 +3,7 @@ import type { Destination, JourneyMessage, Reaction, UserIdentity } from "./type
 
 type DestinationRow = {
   id: number; title: string; location: string; planned_date: string | null; status: Destination["status"];
-  notes: string; created_at: string; updated_at: string;
+  notes: string; photo_path: string | null; video_url: string | null; created_at: string; updated_at: string;
   user_id: number; username: string; display_name: string;
 };
 
@@ -43,7 +43,8 @@ export function listDestinations(currentUserId: number): Destination[] {
     const createdBy: UserIdentity = { id: row.user_id, username: row.username, displayName: row.display_name };
     return {
       id: row.id, title: row.title, location: row.location, plannedDate: row.planned_date, status: row.status,
-      notes: row.notes, createdAt: row.created_at, updatedAt: row.updated_at,
+      notes: row.notes, photoUrl: row.photo_path ? `/api/uploads/${row.photo_path}` : null, videoUrl: row.video_url,
+      createdAt: row.created_at, updatedAt: row.updated_at,
       createdBy, reactions: [...grouped.values()], messages,
     };
   });
