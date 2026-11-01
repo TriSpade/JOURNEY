@@ -28,8 +28,8 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   if (result.changes) {
     const replaceVideos = db.transaction((urls: string[]) => {
       db.prepare("DELETE FROM destination_media WHERE destination_id=? AND type='video'").run(id);
-      const insert = db.prepare("INSERT OR IGNORE INTO destination_media (destination_id, type, value, created_by) VALUES (?, 'video', ?, ?)");
-      for (const url of urls) insert.run(id, url, auth.user.id);
+      const insert = db.prepare("INSERT OR IGNORE INTO destination_media (destination_id, type, value, label, created_by) VALUES (?, 'video', ?, ?, ?)");
+      for (const url of urls) insert.run(id, url, title, auth.user.id);
     });
     replaceVideos(cleanVideoUrls(body.videoUrls));
   }

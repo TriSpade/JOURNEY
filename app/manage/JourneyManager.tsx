@@ -41,6 +41,34 @@ function PhotoCarousel({ destination, onRemove }: { destination: Destination; on
   );
 }
 
+function embedVideoUrl(url: string) {
+  const tiktok = url.match(/tiktok\.com\/@[^/]+\/video\/(\d+)/i);
+  if (tiktok) return { provider: "TikTok", url: `https://www.tiktok.com/player/v1/${tiktok[1]}?controls=1&progress_bar=1&play_button=1&volume_control=1&fullscreen_button=1&autoplay=0&music_info=1&description=1&rel=0` };
+  const instagram = url.match(/instagram\.com\/reels?\/([^/?#]+)/i);
+  if (instagram) return { provider: "Instagram", url: `https://www.instagram.com/reel/${instagram[1]}/embed/` };
+  return null;
+}
+
+function VideoPlayer({ destination, onRemove }: { destination: Destination; onRemove: (id: number, label: string) => void }) {
+  const [current, setCurrent] = useState(0);
+  const activeIndex = current % destination.videos.length;
+  const active = destination.videos[activeIndex];
+  const embed = embedVideoUrl(active.url);
+  return (
+    <div className="destination-video-player">
+      <div className="destination-video-player__header"><div><small>Referensi perjalanan</small><strong>{active.label || destination.title}</strong></div><span>{activeIndex + 1} / {destination.videos.length}</span></div>
+      <div className="destination-video-player__stage">
+        {embed ? <iframe src={embed.url} title={`${active.label} — ${embed.provider}`} allow="accelerometer; autoplay; clipboard-write; encrypted-media; fullscreen; gyroscope; picture-in-picture; web-share" allowFullScreen loading="lazy" /> : <div className="destination-video-player__fallback"><span>▶</span><p>Preview tidak tersedia untuk tautan ini.</p></div>}
+      </div>
+      <div className="destination-video-player__footer">
+        {destination.videos.length > 1 && <div className="destination-video-player__nav"><button onClick={() => setCurrent((activeIndex - 1 + destination.videos.length) % destination.videos.length)}>←</button><button onClick={() => setCurrent((activeIndex + 1) % destination.videos.length)}>→</button></div>}
+        <a href={active.url} target="_blank" rel="noreferrer">Buka di {embed?.provider ?? "sumber"} ↗</a>
+        <button className="destination-video-player__delete" onClick={() => onRemove(active.id, "referensi video")}>Hapus referensi</button>
+      </div>
+    </div>
+  );
+}
+
 export default function JourneyManager() {
   const [user, setUser] = useState<UserIdentity | null>(null);
   const [destinations, setDestinations] = useState<Destination[]>([]);
@@ -192,13 +220,13 @@ export default function JourneyManager() {
         <section className="destination-grid">
           {destinations.map((destination, index) => (
             <article className="destination-card" key={destination.id}>
-              <PhotoCarousel destination={destination} onRemove={removeMedia} />
+              {destination.photos.length > 0 ? <PhotoCarousel destination={destination} onRemove={removeMedia} /> : destination.videos.length > 0 ? <VideoPlayer destination={destination} onRemove={removeMedia} /> : <PhotoCarousel destination={destination} onRemove={removeMedia} />}
               <div className="destination-card__body">
                 <div className="destination-card__top"><span className={`status status--${destination.status}`}>{statusLabels[destination.status]}</span><span className="destination-card__number">{String(index + 1).padStart(2, "0")}</span></div>
                 <h2>{destination.title}</h2><p className="destination-location">⌖ {destination.location || "Lokasi belum ditentukan"}</p>
                 <div className="destination-meta"><span><small>Tanggal</small><strong>{formatDate(destination.plannedDate)}</strong></span></div>
                 {destination.notes && <p className="destination-notes">{destination.notes}</p>}
-                {destination.videos.length > 0 && <div className="video-list">{destination.videos.map((video, videoIndex) => <div className="video-reference" key={video.id}><a href={video.url} target="_blank" rel="noreferrer"><span>▶</span><div><small>{video.label || `Referensi video ${videoIndex + 1}`}</small><strong>Buka inspirasi perjalanan ↗</strong></div></a><button onClick={() => removeMedia(video.id, "referensi video")} aria-label="Hapus referensi video">×</button></div>)}</div>}
+                {destination.photos.length > 0 && destination.videos.length > 0 && <div className="video-list">{destination.videos.map((video, videoIndex) => <div className="video-reference" key={video.id}><a href={video.url} target="_blank" rel="noreferrer"><span>▶</span><div><small>{video.label || `Referensi video ${videoIndex + 1}`}</small><strong>Buka inspirasi perjalanan ↗</strong></div></a><button onClick={() => removeMedia(video.id, "referensi video")} aria-label="Hapus referensi video">×</button></div>)}</div>}
                 <p className="destination-author">Ditambahkan oleh {destination.createdBy.displayName}</p>
                 <div className="destination-actions"><button onClick={() => openEdit(destination)}>Edit</button><button className="danger" onClick={() => removeDestination(destination)}>Hapus</button></div>
               </div>

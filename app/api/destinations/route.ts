@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     VALUES (?, ?, ?, ?, ?, ?)
   `).run(title, cleanText(body.location, 160), cleanText(body.plannedDate, 10) || null, status, cleanText(body.notes, 1500), auth.user.id);
   const id = Number(result.lastInsertRowid);
-  const insertVideo = db.prepare("INSERT OR IGNORE INTO destination_media (destination_id, type, value, created_by) VALUES (?, 'video', ?, ?)");
-  for (const url of cleanVideoUrls(body.videoUrls)) insertVideo.run(id, url, auth.user.id);
+  const insertVideo = db.prepare("INSERT OR IGNORE INTO destination_media (destination_id, type, value, label, created_by) VALUES (?, 'video', ?, ?, ?)");
+  for (const url of cleanVideoUrls(body.videoUrls)) insertVideo.run(id, url, title, auth.user.id);
   return NextResponse.json({ id }, { status: 201 });
 }
