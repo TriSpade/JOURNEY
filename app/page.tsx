@@ -46,7 +46,7 @@ export default function Home() {
           <div className="nav__links">
             <a href="#story">Kisah Kita</a><a href="#memories">Kenangan</a><a href="#trip">Perjalanan</a><a href="#bucket">Bucket List</a>
           </div>
-          <a className="nav__date" href="#trip"><span>Bandung</span><strong>15 · 11 · 2026</strong></a>
+          <a className="nav__date" href="/manage"><span>Our private space</span><strong>Kelola destinasi ↗</strong></a>
         </nav>
 
         <div className="hero__content shell">
@@ -138,7 +138,7 @@ export default function Home() {
         <div className="shell letter__inner reveal-on-scroll"><HeartMark /><p className="eyebrow eyebrow--light"><span /> A little note for Anita <span /></p><h2 id="letter-title">Ke mana pun langkah membawa kita,<br /><i>aku ingin menjalaninya bersamamu.</i></h2><p>Ini baru permulaan. Akan ada lebih banyak kota, lebih banyak foto, lebih banyak tawa, dan lebih banyak alasan untuk saling memilih—setiap hari.</p><div className="signature"><span>with all my heart,</span><strong>Dimas.</strong></div></div>
       </section>
 
-      <footer className="footer"><div className="shell footer__inner"><a className="brand brand--footer" href="#home"><HeartMark small /><span><strong>Our Journey</strong><em>Dimas &amp; Anita</em></span></a><p>Dibuat dengan cinta, untuk semua cerita yang belum terjadi.</p><a href="#home" className="back-top">Kembali ke atas <span>↑</span></a></div></footer>
+      <footer className="footer"><div className="shell footer__inner"><a className="brand brand--footer" href="#home"><HeartMark small /><span><strong>Our Journey</strong><em>Dimas &amp; Anita</em></span></a><p>Dibuat dengan cinta, untuk semua cerita yang belum terjadi.</p><a href="/manage" className="back-top">Buka planner <span>↗</span></a></div></footer>
       <MusicPlayer />
     </main>
   );

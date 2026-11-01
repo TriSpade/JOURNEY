@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-const musicSource = `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/the_mountain-france-romance-375982.mp3`;
+const musicSource = "/the_mountain-france-romance-375982.mp3";
 
 export default function MusicPlayer() {
   const [playing, setPlaying] = useState(false);
@@ -31,13 +31,14 @@ export default function MusicPlayer() {
   };
 
   useEffect(() => {
+    const audio = audioRef.current;
     const startFromIntro = () => {
-      if (audioRef.current?.paused !== false) void start();
+      if (audio?.paused !== false) void start();
     };
     window.addEventListener("journey:start-music", startFromIntro);
     return () => {
       window.removeEventListener("journey:start-music", startFromIntro);
-      audioRef.current?.pause();
+      audio?.pause();
     };
   }, []);
 
