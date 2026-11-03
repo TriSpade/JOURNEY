@@ -5,9 +5,14 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Destination, UserIdentity } from "@/lib/types";
 
-const emptyForm = { title: "", location: "", plannedDate: "", status: "wishlist", notes: "", videoUrls: "" };
+const emptyForm = { title: "", location: "", plannedDate: "", status: "wishlist", plan: "A", notes: "", videoUrls: "" };
 const reactions = ["❤️", "😍", "✨", "👍", "🥰"];
 const statusLabels = { wishlist: "Wishlist", planned: "Direncanakan", visited: "Sudah dikunjungi" } as const;
+const planOptions = {
+  A: { title: "Plan A", eyebrow: "Rencana utama", description: "Rute utama yang sudah disusun dari Kawah Putih sampai Braga." },
+  B: { title: "Plan B", eyebrow: "Ramai / macet sedang", description: "Jadwal simulasi dengan pilihan yang lebih fleksibel dan buffer perjalanan." },
+  C: { title: "Plan C", eyebrow: "Macet berat", description: "Fallback paling aman: lebih sedikit titik, pulang lebih awal, dan buffer lebih panjang." },
+} as const;
 
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
   const response = await fetch(url, { ...options, headers: { "Content-Type": "application/json", ...options?.headers } });
@@ -72,6 +77,7 @@ function VideoPlayer({ destination, onRemove }: { destination: Destination; onRe
 export default function JourneyManager() {
   const [user, setUser] = useState<UserIdentity | null>(null);
   const [destinations, setDestinations] = useState<Destination[]>([]);
+  const [activePlan, setActivePlan] = useState<Destination["plan"]>("A");
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -119,10 +125,10 @@ export default function JourneyManager() {
     setUser(null); setDestinations([]);
   };
 
-  const openCreate = () => { setEditingId(null); setForm(emptyForm); setPhotos([]); setPhotoLabels(""); setShowForm(true); setError(""); };
+  const openCreate = () => { setEditingId(null); setForm({ ...emptyForm, plan: activePlan }); setPhotos([]); setPhotoLabels(""); setShowForm(true); setError(""); };
   const openEdit = (destination: Destination) => {
     setEditingId(destination.id);
-    setForm({ title: destination.title, location: destination.location, plannedDate: destination.plannedDate ?? "", status: destination.status, notes: destination.notes, videoUrls: destination.videos.map((video) => video.url).join("\n") });
+    setForm({ title: destination.title, location: destination.location, plannedDate: destination.plannedDate ?? "", status: destination.status, plan: destination.plan, notes: destination.notes, videoUrls: destination.videos.map((video) => video.url).join("\n") });
     setPhotos([]);
     setPhotoLabels("");
     setShowForm(true); setError("");
@@ -178,6 +184,8 @@ export default function JourneyManager() {
     await loadDestinations();
   };
 
+  const visibleDestinations = destinations.filter((destination) => destination.plan === activePlan);
+
   if (loading) return <main className="manager manager--center"><div className="manager-loader">♡</div><p>Menyiapkan ruang kalian…</p></main>;
 
   if (!user) return (
@@ -208,21 +216,24 @@ export default function JourneyManager() {
         <div><p className="manager-eyebrow">Our private planner</p><h1>Mimpi yang akan<br /><i>kita datangi bersama.</i></h1><p>Tambah tempat baru, diskusikan rencananya, lalu simpan semua antusiasme di satu ruang.</p></div>
         <button className="manager-primary" onClick={openCreate}>＋ Tambah destinasi</button>
       </section>
+      <section className="plan-switcher" aria-label="Pilih rencana perjalanan">
+        {(Object.keys(planOptions) as Destination["plan"][]).map((plan) => <button key={plan} className={activePlan === plan ? "is-active" : ""} onClick={() => setActivePlan(plan)}><small>{planOptions[plan].eyebrow}</small><strong>{planOptions[plan].title}</strong><span>{planOptions[plan].description}</span></button>)}
+      </section>
       <section className="manager-stats" aria-label="Ringkasan destinasi">
-        <div><strong>{destinations.length}</strong><span>Semua destinasi</span></div>
-        <div><strong>{destinations.filter((item) => item.status === "planned").length}</strong><span>Direncanakan</span></div>
-        <div><strong>{destinations.filter((item) => item.status === "visited").length}</strong><span>Sudah dikunjungi</span></div>
+        <div><strong>{visibleDestinations.length}</strong><span>Destinasi {planOptions[activePlan].title}</span></div>
+        <div><strong>{visibleDestinations.filter((item) => item.status === "planned").length}</strong><span>Direncanakan</span></div>
+        <div><strong>{visibleDestinations.filter((item) => item.status === "visited").length}</strong><span>Sudah dikunjungi</span></div>
       </section>
       {error && <p className="form-error manager-notice" role="alert">{error}</p>}
-      {destinations.length === 0 ? (
-        <section className="manager-empty"><span>⌖</span><h2>Belum ada destinasi</h2><p>Mulai dari satu tempat yang selalu ingin kalian datangi.</p><button className="manager-primary" onClick={openCreate}>Buat destinasi pertama</button></section>
+      {visibleDestinations.length === 0 ? (
+        <section className="manager-empty"><span>⌖</span><h2>{planOptions[activePlan].title} belum memiliki destinasi</h2><p>Tambahkan jadwal simulasi atau titik cadangan untuk rencana ini.</p><button className="manager-primary" onClick={openCreate}>Tambah destinasi {planOptions[activePlan].title}</button></section>
       ) : (
         <section className="destination-grid">
-          {destinations.map((destination, index) => (
+          {visibleDestinations.map((destination, index) => (
             <article className="destination-card" key={destination.id}>
               {destination.photos.length > 0 ? <PhotoCarousel destination={destination} onRemove={removeMedia} /> : destination.videos.length > 0 ? <VideoPlayer destination={destination} onRemove={removeMedia} /> : <PhotoCarousel destination={destination} onRemove={removeMedia} />}
               <div className="destination-card__body">
-                <div className="destination-card__top"><span className={`status status--${destination.status}`}>{statusLabels[destination.status]}</span><span className="destination-card__number">{String(index + 1).padStart(2, "0")}</span></div>
+                <div className="destination-card__top"><div className="destination-card__badges"><span className={`plan-badge plan-badge--${destination.plan.toLowerCase()}`}>Plan {destination.plan}</span><span className={`status status--${destination.status}`}>{statusLabels[destination.status]}</span></div><span className="destination-card__number">{String(index + 1).padStart(2, "0")}</span></div>
                 <h2>{destination.title}</h2><p className="destination-location">⌖ {destination.location || "Lokasi belum ditentukan"}</p>
                 <div className="destination-meta"><span><small>Tanggal</small><strong>{formatDate(destination.plannedDate)}</strong></span></div>
                 {destination.notes && <p className="destination-notes">{destination.notes}</p>}
@@ -250,7 +261,7 @@ export default function JourneyManager() {
           ))}
         </section>
       )}
-      {showForm && <div className="modal-backdrop" onMouseDown={(event) => { if (event.currentTarget === event.target) setShowForm(false); }}><section className="destination-modal" role="dialog" aria-modal="true" aria-labelledby="destination-form-title"><button className="modal-close" onClick={() => setShowForm(false)} aria-label="Tutup">×</button><p className="manager-eyebrow">Our next chapter</p><h2 id="destination-form-title">{editingId ? "Edit destinasi" : "Destinasi baru"}</h2><form onSubmit={saveDestination}><label>Nama destinasi<input value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} required maxLength={120} placeholder="Contoh: Yogyakarta" /></label><label>Lokasi<input value={form.location} onChange={(event) => setForm({ ...form, location: event.target.value })} maxLength={160} placeholder="Kota atau tempat spesifik" /></label><div className="form-row"><label>Tanggal<input type="date" value={form.plannedDate} onChange={(event) => setForm({ ...form, plannedDate: event.target.value })} /></label><label>Status<select value={form.status} onChange={(event) => setForm({ ...form, status: event.target.value })}><option value="wishlist">Wishlist</option><option value="planned">Direncanakan</option><option value="visited">Sudah dikunjungi</option></select></label></div><label>Foto destinasi<input className="file-input" type="file" multiple accept="image/jpeg,image/png,image/webp" onChange={(event) => { const selected = Array.from(event.target.files ?? []); setPhotos(selected); setPhotoLabels(selected.map((file) => file.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ")).join("\n")); }} /><small className="field-help">Bisa pilih beberapa foto · JPG, PNG, atau WebP · maksimal 8 MB per foto · maksimal 12 foto{photos.length ? ` · ${photos.length} foto dipilih` : ""}</small></label>{photos.length > 0 && <label>Label foto<textarea value={photoLabels} onChange={(event) => setPhotoLabels(event.target.value)} rows={Math.min(photos.length, 5)} placeholder={"Kawah Putih\nKebun Teh Rancabali"} /><small className="field-help">Satu label per baris sesuai urutan foto.</small></label>}<label>Referensi video<textarea value={form.videoUrls} onChange={(event) => setForm({ ...form, videoUrls: event.target.value })} maxLength={10000} rows={3} placeholder={"https://youtube.com/...\nhttps://tiktok.com/..."} /><small className="field-help">Satu link per baris · maksimal 20 link.</small></label><label>Catatan<textarea value={form.notes} onChange={(event) => setForm({ ...form, notes: event.target.value })} maxLength={1500} rows={4} placeholder="Hal yang ingin dilakukan, tempat makan, atau catatan kecil…" /></label>{error && <p className="form-error">{error}</p>}<button className="manager-primary" disabled={busy} type="submit">{busy ? "Menyimpan…" : editingId ? "Simpan perubahan" : "Tambahkan ke perjalanan"}</button></form></section></div>}
+      {showForm && <div className="modal-backdrop" onMouseDown={(event) => { if (event.currentTarget === event.target) setShowForm(false); }}><section className="destination-modal" role="dialog" aria-modal="true" aria-labelledby="destination-form-title"><button className="modal-close" onClick={() => setShowForm(false)} aria-label="Tutup">×</button><p className="manager-eyebrow">Our next chapter</p><h2 id="destination-form-title">{editingId ? "Edit destinasi" : "Destinasi baru"}</h2><form onSubmit={saveDestination}><label>Nama destinasi<input value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} required maxLength={120} placeholder="Contoh: Yogyakarta" /></label><label>Lokasi<input value={form.location} onChange={(event) => setForm({ ...form, location: event.target.value })} maxLength={160} placeholder="Kota atau tempat spesifik" /></label><label>Rencana perjalanan<select value={form.plan} onChange={(event) => setForm({ ...form, plan: event.target.value })}><option value="A">Plan A · Utama</option><option value="B">Plan B · Ramai / macet sedang</option><option value="C">Plan C · Macet berat</option></select></label><div className="form-row"><label>Tanggal<input type="date" value={form.plannedDate} onChange={(event) => setForm({ ...form, plannedDate: event.target.value })} /></label><label>Status<select value={form.status} onChange={(event) => setForm({ ...form, status: event.target.value })}><option value="wishlist">Wishlist</option><option value="planned">Direncanakan</option><option value="visited">Sudah dikunjungi</option></select></label></div><label>Foto destinasi<input className="file-input" type="file" multiple accept="image/jpeg,image/png,image/webp" onChange={(event) => { const selected = Array.from(event.target.files ?? []); setPhotos(selected); setPhotoLabels(selected.map((file) => file.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ")).join("\n")); }} /><small className="field-help">Bisa pilih beberapa foto · JPG, PNG, atau WebP · maksimal 8 MB per foto · maksimal 12 foto{photos.length ? ` · ${photos.length} foto dipilih` : ""}</small></label>{photos.length > 0 && <label>Label foto<textarea value={photoLabels} onChange={(event) => setPhotoLabels(event.target.value)} rows={Math.min(photos.length, 5)} placeholder={"Kawah Putih\nKebun Teh Rancabali"} /><small className="field-help">Satu label per baris sesuai urutan foto.</small></label>}<label>Referensi video<textarea value={form.videoUrls} onChange={(event) => setForm({ ...form, videoUrls: event.target.value })} maxLength={10000} rows={3} placeholder={"https://youtube.com/...\nhttps://tiktok.com/..."} /><small className="field-help">Satu link per baris · maksimal 20 link. Boleh dikosongkan dan ditambahkan nanti.</small></label><label>Catatan<textarea value={form.notes} onChange={(event) => setForm({ ...form, notes: event.target.value })} maxLength={1500} rows={4} placeholder="Hal yang ingin dilakukan, tempat makan, atau catatan kecil…" /></label>{error && <p className="form-error">{error}</p>}<button className="manager-primary" disabled={busy} type="submit">{busy ? "Menyimpan…" : editingId ? "Simpan perubahan" : "Tambahkan ke perjalanan"}</button></form></section></div>}
     </main>
   );
 }

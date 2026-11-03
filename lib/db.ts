@@ -59,6 +59,8 @@ function openDatabase() {
   if (!mediaColumns.some((column) => column.name === "label")) database.exec("ALTER TABLE destination_media ADD COLUMN label TEXT");
 
   const destinationColumns = database.pragma("table_info(destinations)") as Array<{ name: string }>;
+  if (!destinationColumns.some((column) => column.name === "plan")) database.exec("ALTER TABLE destinations ADD COLUMN plan TEXT NOT NULL DEFAULT 'A' CHECK(plan IN ('A', 'B', 'C'))");
+  if (!destinationColumns.some((column) => column.name === "plan_order")) database.exec("ALTER TABLE destinations ADD COLUMN plan_order INTEGER NOT NULL DEFAULT 0");
   if (!destinationColumns.some((column) => column.name === "photo_path")) database.exec("ALTER TABLE destinations ADD COLUMN photo_path TEXT");
   if (!destinationColumns.some((column) => column.name === "video_url")) database.exec("ALTER TABLE destinations ADD COLUMN video_url TEXT");
   database.exec(`

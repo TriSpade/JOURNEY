@@ -4,6 +4,7 @@ import { cleanText, requireUser } from "@/lib/http";
 import { deleteUploadedPhoto } from "@/lib/uploads";
 
 const validStatuses = new Set(["wishlist", "planned", "visited"]);
+const validPlans = new Set(["A", "B", "C"]);
 
 function cleanVideoUrls(value: unknown) {
   if (!Array.isArray(value)) return [];
@@ -22,9 +23,10 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   const title = cleanText(body.title, 120);
   if (!title) return NextResponse.json({ error: "Nama destinasi wajib diisi." }, { status: 400 });
   const status = validStatuses.has(body.status) ? body.status : "wishlist";
+  const plan = validPlans.has(body.plan) ? body.plan : "A";
   const result = db.prepare(`
-    UPDATE destinations SET title=?, location=?, planned_date=?, status=?, notes=?, updated_at=CURRENT_TIMESTAMP WHERE id=?
-  `).run(title, cleanText(body.location, 160), cleanText(body.plannedDate, 10) || null, status, cleanText(body.notes, 1500), id);
+    UPDATE destinations SET title=?, location=?, planned_date=?, status=?, plan=?, notes=?, updated_at=CURRENT_TIMESTAMP WHERE id=?
+  `).run(title, cleanText(body.location, 160), cleanText(body.plannedDate, 10) || null, status, plan, cleanText(body.notes, 1500), id);
   if (result.changes) {
     const replaceVideos = db.transaction((urls: string[]) => {
       db.prepare("DELETE FROM destination_media WHERE destination_id=? AND type='video'").run(id);

@@ -27,6 +27,8 @@ export type DestinationMedia = {
 
 export type Destination = {
   id: number;
+  plan: "A" | "B" | "C";
+  planOrder: number;
   title: string;
   location: string;
   plannedDate: string | null;

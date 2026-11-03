@@ -2,7 +2,7 @@ import db from "./db";
 import type { Destination, DestinationMedia, JourneyMessage, Reaction, UserIdentity } from "./types";
 
 type DestinationRow = {
-  id: number; title: string; location: string; planned_date: string | null; status: Destination["status"];
+  id: number; plan: Destination["plan"]; plan_order: number; title: string; location: string; planned_date: string | null; status: Destination["status"];
   notes: string; photo_path: string | null; video_url: string | null; created_at: string; updated_at: string;
   user_id: number; username: string; display_name: string;
 };
@@ -15,7 +15,7 @@ export function listDestinations(currentUserId: number): Destination[] {
   const rows = db.prepare(`
     SELECT d.*, u.id AS user_id, u.username, u.display_name
     FROM destinations d JOIN users u ON u.id = d.created_by
-    ORDER BY CASE d.status WHEN 'planned' THEN 0 WHEN 'wishlist' THEN 1 ELSE 2 END, d.planned_date IS NULL, d.planned_date, d.updated_at DESC
+    ORDER BY CASE d.plan WHEN 'A' THEN 0 WHEN 'B' THEN 1 ELSE 2 END, d.plan_order, CASE d.status WHEN 'planned' THEN 0 WHEN 'wishlist' THEN 1 ELSE 2 END, d.planned_date IS NULL, d.planned_date, d.id
   `).all() as DestinationRow[];
   const reactionRows = db.prepare(`
     SELECT r.destination_id, r.emoji, u.id AS user_id, u.display_name
@@ -48,7 +48,7 @@ export function listDestinations(currentUserId: number): Destination[] {
       label: item.label?.trim() || (item.type === "photo" ? "Foto perjalanan" : "Referensi video"),
     }));
     return {
-      id: row.id, title: row.title, location: row.location, plannedDate: row.planned_date, status: row.status,
+      id: row.id, plan: row.plan, planOrder: row.plan_order, title: row.title, location: row.location, plannedDate: row.planned_date, status: row.status,
       notes: row.notes, photos: media.filter((item) => item.type === "photo"), videos: media.filter((item) => item.type === "video"),
       createdAt: row.created_at, updatedAt: row.updated_at,
       createdBy, reactions: [...grouped.values()], messages,

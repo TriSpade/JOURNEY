@@ -20,6 +20,13 @@
 .manager-primary { border: 0; background: #633b32; color: #fff8f4; padding: 15px 22px; border-radius: 3px; cursor: pointer; font-weight: 700; box-shadow: 0 12px 30px rgba(76,41,33,.15); transition: transform .2s, background .2s; }
 .manager-primary:hover { transform: translateY(-2px); background: #794a3e; }
 .manager-primary:disabled { opacity: .55; cursor: wait; transform: none; }
+.plan-switcher { max-width: 1180px; margin: 0 auto 18px; padding: 0 24px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.plan-switcher button { min-height: 126px; padding: 20px; border: 1px solid #dfcfc6; background: #fffaf6; color: #49342c; text-align: left; cursor: pointer; display: grid; align-content: start; gap: 6px; transition: border-color .2s, background .2s, transform .2s; }
+.plan-switcher button:hover { transform: translateY(-2px); border-color: #b8787b; }
+.plan-switcher button.is-active { border-color: #9e4c53; background: #f4e2df; box-shadow: inset 0 0 0 1px #9e4c53; }
+.plan-switcher small { color: #a2555b; font-size: 9px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+.plan-switcher strong { font: 400 28px/1.05 Georgia, serif; }
+.plan-switcher span { color: #806a62; font-size: 11px; line-height: 1.55; }
 .manager-stats { max-width: 1180px; margin: 0 auto 38px; padding: 0 24px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; }
 .manager-stats div { background: #efe3da; padding: 24px 28px; display: flex; align-items: baseline; gap: 12px; }
 .manager-stats strong { color: #a64e54; font: 400 32px/1 Georgia, serif; }
@@ -65,7 +72,11 @@
 .destination-video-player__nav { display: flex; gap: 5px; }
 .destination-video-player__delete { color: #e9a8ad !important; }
 .destination-card__top { display: flex; align-items: center; justify-content: space-between; }
+.destination-card__badges { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
 .destination-card__number { color: #cbb8ae; font: 400 24px/1 Georgia, serif; }
+.plan-badge { display: inline-flex; padding: 7px 10px; border-radius: 999px; color: #fff; background: #75443a; font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.plan-badge--b { background: #9a6541; }
+.plan-badge--c { background: #754f6b; }
 .status { display: inline-flex; padding: 7px 10px; border-radius: 999px; font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
 .status--wishlist { color: #93535b; background: #f6e1e3; }
 .status--planned { color: #70603a; background: #f3e9c7; }
@@ -146,6 +157,8 @@
   .manager-user > span { display: none; }
   .manager-hero { padding: 50px 20px 32px; display: block; }
   .manager-hero .manager-primary { width: 100%; margin-top: 28px; }
+  .plan-switcher { padding: 0 20px; grid-template-columns: 1fr; }
+  .plan-switcher button { min-height: 0; }
   .manager-stats { padding: 0 20px; grid-template-columns: 1fr; }
   .manager-stats div { padding: 16px 20px; }
   .destination-grid { padding: 0 16px; grid-template-columns: 1fr; }

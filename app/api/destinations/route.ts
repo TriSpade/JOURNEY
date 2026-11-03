@@ -4,6 +4,7 @@ import { listDestinations } from "@/lib/destinations";
 import { cleanText, requireUser } from "@/lib/http";
 
 const validStatuses = new Set(["wishlist", "planned", "visited"]);
+const validPlans = new Set(["A", "B", "C"]);
 
 function cleanVideoUrls(value: unknown) {
   if (!Array.isArray(value)) return [];
@@ -26,10 +27,11 @@ export async function POST(request: NextRequest) {
   const title = cleanText(body.title, 120);
   if (!title) return NextResponse.json({ error: "Nama destinasi wajib diisi." }, { status: 400 });
   const status = validStatuses.has(body.status) ? body.status : "wishlist";
+  const plan = validPlans.has(body.plan) ? body.plan : "A";
   const result = db.prepare(`
-    INSERT INTO destinations (title, location, planned_date, status, notes, created_by)
-    VALUES (?, ?, ?, ?, ?, ?)
-  `).run(title, cleanText(body.location, 160), cleanText(body.plannedDate, 10) || null, status, cleanText(body.notes, 1500), auth.user.id);
+    INSERT INTO destinations (title, location, planned_date, status, plan, plan_order, notes, created_by)
+    VALUES (?, ?, ?, ?, ?, (SELECT COALESCE(MAX(plan_order), 0) + 1 FROM destinations WHERE plan = ?), ?, ?)
+  `).run(title, cleanText(body.location, 160), cleanText(body.plannedDate, 10) || null, status, plan, plan, cleanText(body.notes, 1500), auth.user.id);
   const id = Number(result.lastInsertRowid);
   const insertVideo = db.prepare("INSERT OR IGNORE INTO destination_media (destination_id, type, value, label, created_by) VALUES (?, 'video', ?, ?, ?)");
   for (const url of cleanVideoUrls(body.videoUrls)) insertVideo.run(id, url, title, auth.user.id);
