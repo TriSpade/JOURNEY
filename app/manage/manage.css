@@ -27,6 +27,13 @@
 .plan-switcher small { color: #a2555b; font-size: 9px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
 .plan-switcher strong { font: 400 28px/1.05 Georgia, serif; }
 .plan-switcher span { color: #806a62; font-size: 11px; line-height: 1.55; }
+.plan-guidance { max-width: 1132px; margin: 0 auto 18px; padding: 18px 22px; display: grid; grid-template-columns: 1fr 1.25fr auto; align-items: center; gap: 24px; border-left: 4px solid #8c5148; background: #eadbd1; }
+.plan-guidance div { display: grid; gap: 5px; }
+.plan-guidance small { color: #9a4e55; font-size: 9px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
+.plan-guidance p,.plan-guidance strong { margin: 0; color: #5d463e; font-size: 12px; line-height: 1.55; }
+.plan-guidance > span { color: #866f67; font-size: 9px; line-height: 1.4; text-align: right; }
+.plan-guidance--b { border-left-color: #9a6541; background: #efe1d3; }
+.plan-guidance--c { border-left-color: #754f6b; background: #eadfe8; }
 .manager-stats { max-width: 1180px; margin: 0 auto 38px; padding: 0 24px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; }
 .manager-stats div { background: #efe3da; padding: 24px 28px; display: flex; align-items: baseline; gap: 12px; }
 .manager-stats strong { color: #a64e54; font: 400 32px/1 Georgia, serif; }
@@ -159,6 +166,8 @@
   .manager-hero .manager-primary { width: 100%; margin-top: 28px; }
   .plan-switcher { padding: 0 20px; grid-template-columns: 1fr; }
   .plan-switcher button { min-height: 0; }
+  .plan-guidance { margin-inline: 20px; grid-template-columns: 1fr; gap: 14px; }
+  .plan-guidance > span { text-align: left; }
   .manager-stats { padding: 0 20px; grid-template-columns: 1fr; }
   .manager-stats div { padding: 16px 20px; }
   .destination-grid { padding: 0 16px; grid-template-columns: 1fr; }

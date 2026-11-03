@@ -9,9 +9,9 @@ const emptyForm = { title: "", location: "", plannedDate: "", status: "wishlist"
 const reactions = ["❤️", "😍", "✨", "👍", "🥰"];
 const statusLabels = { wishlist: "Wishlist", planned: "Direncanakan", visited: "Sudah dikunjungi" } as const;
 const planOptions = {
-  A: { title: "Plan A", eyebrow: "Rencana utama", description: "Rute utama yang sudah disusun dari Kawah Putih sampai Braga." },
-  B: { title: "Plan B", eyebrow: "Ramai / macet sedang", description: "Jadwal simulasi dengan pilihan yang lebih fleksibel dan buffer perjalanan." },
-  C: { title: "Plan C", eyebrow: "Macet berat", description: "Fallback paling aman: lebih sedikit titik, pulang lebih awal, dan buffer lebih panjang." },
+  A: { title: "Plan A", eyebrow: "Rencana utama", description: "Rute utama yang sudah disusun dari Kawah Putih sampai Braga.", priority: "Kawah Putih → Rengganis → Kebun Teh → Stroberi → Braga" },
+  B: { title: "Plan B", eyebrow: "Destinasi penuh / macet sedang", description: "Gunakan jika antrean Kawah Putih panjang, Rengganis penuh, atau jadwal terlambat sekitar 60 menit.", priority: "Kawah Putih atau Ranca Upas → Situ Patenggang → Kebun Teh → Bandung" },
+  C: { title: "Plan C", eyebrow: "Macet berat", description: "Fallback paling aman: lebih sedikit titik, pulang lebih awal, dan buffer lebih panjang.", priority: "Kawah Putih → kembali Bandung lebih awal → makan dekat penginapan" },
 } as const;
 
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
@@ -219,6 +219,7 @@ export default function JourneyManager() {
       <section className="plan-switcher" aria-label="Pilih rencana perjalanan">
         {(Object.keys(planOptions) as Destination["plan"][]).map((plan) => <button key={plan} className={activePlan === plan ? "is-active" : ""} onClick={() => setActivePlan(plan)}><small>{planOptions[plan].eyebrow}</small><strong>{planOptions[plan].title}</strong><span>{planOptions[plan].description}</span></button>)}
       </section>
+      <aside className={`plan-guidance plan-guidance--${activePlan.toLowerCase()}`}><div><small>Kapan digunakan</small><p>{planOptions[activePlan].description}</p></div><div><small>Urutan prioritas</small><strong>{planOptions[activePlan].priority}</strong></div><span>Jadwal simulasi · bukan estimasi lalu lintas real-time</span></aside>
       <section className="manager-stats" aria-label="Ringkasan destinasi">
         <div><strong>{visibleDestinations.length}</strong><span>Destinasi {planOptions[activePlan].title}</span></div>
         <div><strong>{visibleDestinations.filter((item) => item.status === "planned").length}</strong><span>Direncanakan</span></div>
