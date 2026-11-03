@@ -20,13 +20,13 @@
 .manager-primary { border: 0; background: #633b32; color: #fff8f4; padding: 15px 22px; border-radius: 3px; cursor: pointer; font-weight: 700; box-shadow: 0 12px 30px rgba(76,41,33,.15); transition: transform .2s, background .2s; }
 .manager-primary:hover { transform: translateY(-2px); background: #794a3e; }
 .manager-primary:disabled { opacity: .55; cursor: wait; transform: none; }
-.plan-switcher { max-width: 1180px; margin: 0 auto 18px; padding: 0 24px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-.plan-switcher button { min-height: 126px; padding: 20px; border: 1px solid #dfcfc6; background: #fffaf6; color: #49342c; text-align: left; cursor: pointer; display: grid; align-content: start; gap: 6px; transition: border-color .2s, background .2s, transform .2s; }
-.plan-switcher button:hover { transform: translateY(-2px); border-color: #b8787b; }
-.plan-switcher button.is-active { border-color: #9e4c53; background: #f4e2df; box-shadow: inset 0 0 0 1px #9e4c53; }
-.plan-switcher small { color: #a2555b; font-size: 9px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
-.plan-switcher strong { font: 400 28px/1.05 Georgia, serif; }
-.plan-switcher span { color: #806a62; font-size: 11px; line-height: 1.55; }
+.plan-switcher { max-width: 1132px; margin: 0 auto; display: flex; align-items: end; gap: 4px; overflow-x: auto; border-bottom: 1px solid #cdb9af; scrollbar-width: thin; }
+.plan-switcher button { min-width: 152px; padding: 13px 24px 12px; border: 1px solid transparent; border-bottom: 0; background: transparent; color: #846b62; cursor: pointer; display: flex; align-items: baseline; justify-content: center; gap: 10px; white-space: nowrap; transition: color .2s, background .2s, border-color .2s; }
+.plan-switcher button:hover { color: #9e4c53; background: #f3e8e1; }
+.plan-switcher button.is-active { position: relative; margin-bottom: -1px; border-color: #cdb9af; color: #fff; background: #75443a; }
+.plan-switcher button.is-active::after { content: ""; position: absolute; right: 0; bottom: -1px; left: 0; height: 2px; background: #75443a; }
+.plan-switcher strong { font: 600 18px/1 Georgia, serif; }
+.plan-switcher small { font-size: 8px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
 .plan-guidance { max-width: 1132px; margin: 0 auto 18px; padding: 18px 22px; display: grid; grid-template-columns: 1fr 1.25fr auto; align-items: center; gap: 24px; border-left: 4px solid #8c5148; background: #eadbd1; }
 .plan-guidance div { display: grid; gap: 5px; }
 .plan-guidance small { color: #9a4e55; font-size: 9px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
@@ -164,8 +164,9 @@
   .manager-user > span { display: none; }
   .manager-hero { padding: 50px 20px 32px; display: block; }
   .manager-hero .manager-primary { width: 100%; margin-top: 28px; }
-  .plan-switcher { padding: 0 20px; grid-template-columns: 1fr; }
-  .plan-switcher button { min-height: 0; }
+  .plan-switcher { margin-inline: 20px; }
+  .plan-switcher button { min-width: 126px; padding-inline: 15px; }
+  .plan-switcher button small { display: none; }
   .plan-guidance { margin-inline: 20px; grid-template-columns: 1fr; gap: 14px; }
   .plan-guidance > span { text-align: left; }
   .manager-stats { padding: 0 20px; grid-template-columns: 1fr; }

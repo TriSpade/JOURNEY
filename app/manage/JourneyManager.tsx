@@ -216,10 +216,10 @@ export default function JourneyManager() {
         <div><p className="manager-eyebrow">Our private planner</p><h1>Mimpi yang akan<br /><i>kita datangi bersama.</i></h1><p>Tambah tempat baru, diskusikan rencananya, lalu simpan semua antusiasme di satu ruang.</p></div>
         <button className="manager-primary" onClick={openCreate}>＋ Tambah destinasi</button>
       </section>
-      <section className="plan-switcher" aria-label="Pilih rencana perjalanan">
-        {(Object.keys(planOptions) as Destination["plan"][]).map((plan) => <button key={plan} className={activePlan === plan ? "is-active" : ""} onClick={() => setActivePlan(plan)}><small>{planOptions[plan].eyebrow}</small><strong>{planOptions[plan].title}</strong><span>{planOptions[plan].description}</span></button>)}
+      <section className="plan-switcher" aria-label="Pilih rencana perjalanan" role="tablist">
+        {(Object.keys(planOptions) as Destination["plan"][]).map((plan) => <button key={plan} role="tab" aria-selected={activePlan === plan} aria-controls="active-plan-panel" className={activePlan === plan ? "is-active" : ""} onClick={() => setActivePlan(plan)}><strong>{planOptions[plan].title}</strong><small>{planOptions[plan].eyebrow}</small></button>)}
       </section>
-      <aside className={`plan-guidance plan-guidance--${activePlan.toLowerCase()}`}><div><small>Kapan digunakan</small><p>{planOptions[activePlan].description}</p></div><div><small>Urutan prioritas</small><strong>{planOptions[activePlan].priority}</strong></div><span>Jadwal simulasi · bukan estimasi lalu lintas real-time</span></aside>
+      <aside id="active-plan-panel" role="tabpanel" className={`plan-guidance plan-guidance--${activePlan.toLowerCase()}`}><div><small>Kapan digunakan</small><p>{planOptions[activePlan].description}</p></div><div><small>Urutan prioritas</small><strong>{planOptions[activePlan].priority}</strong></div><span>Jadwal simulasi · bukan estimasi lalu lintas real-time</span></aside>
       <section className="manager-stats" aria-label="Ringkasan destinasi">
         <div><strong>{visibleDestinations.length}</strong><span>Destinasi {planOptions[activePlan].title}</span></div>
         <div><strong>{visibleDestinations.filter((item) => item.status === "planned").length}</strong><span>Direncanakan</span></div>
