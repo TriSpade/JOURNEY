@@ -11,7 +11,7 @@ const statusLabels = { wishlist: "Wishlist", planned: "Direncanakan", visited: "
 const planOptions = {
   A: { title: "Plan A", eyebrow: "Rencana utama", description: "Rute utama yang sudah disusun dari Kawah Putih sampai Braga.", priority: "Kawah Putih → Rengganis → Kebun Teh → Stroberi → Braga" },
   B: { title: "Plan B", eyebrow: "Destinasi penuh / macet sedang", description: "Gunakan jika antrean Kawah Putih panjang, Rengganis penuh, atau jadwal terlambat sekitar 60 menit.", priority: "Kawah Putih atau Ranca Upas → Situ Patenggang → Kebun Teh → Bandung" },
-  C: { title: "Plan C", eyebrow: "Macet berat", description: "Fallback paling aman: lebih sedikit titik, pulang lebih awal, dan buffer lebih panjang.", priority: "Kawah Putih → kembali Bandung lebih awal → makan dekat penginapan" },
+  C: { title: "Plan C", eyebrow: "Macet berat", description: "Fallback paling aman: lebih sedikit titik, pulang lebih awal, dan buffer lebih panjang.", priority: "Kawah Putih → kembali Bandung lebih awal → makan malam di Bandung" },
 } as const;
 
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
