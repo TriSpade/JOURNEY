@@ -30,7 +30,7 @@ const plans: Record<PlanKey, { label: string; description: string; items: Bucket
     description: "Cadangan saat destinasi penuh atau jadwal terlambat sekitar 60 menit.",
     items: [
       { title: "Kawah Putih + Sunan Ibu, atau Ranca Upas", meta: "07.30–09.30 · Rancabali, Ciwidey", tag: "Instagram", href: "https://www.instagram.com/reels/DHvu2qhyZXz/" },
-      { title: "Ranca Upas jika belum dikunjungi", meta: "09.30–10.30 · Ciwidey" },
+      { title: "Ranca Upas jika belum dikunjungi", meta: "09.30–10.30 · Ciwidey", tag: "Instagram", href: "https://www.instagram.com/p/DOiqN0PCav8/" },
       { title: "Makan siang", meta: "10.30–11.30 · Sekitar Ciwidey" },
       { title: "Situ Patenggang", meta: "11.30–13.00 · Pengganti Rengganis" },
       { title: "Foto Kebun Teh Rancabali", meta: "13.00–13.30 · Rancabali, Ciwidey", tag: "TikTok", href: "https://www.tiktok.com/@neorentalmotorbdg/video/7276414435416100101" },
@@ -45,7 +45,7 @@ const plans: Record<PlanKey, { label: string; description: string; items: Bucket
     items: [
       { title: "Kawah Putih + Sunan Ibu", meta: "06.00–09.00 · Rancabali, Ciwidey", tag: "Instagram", href: "https://www.instagram.com/reels/DHvu2qhyZXz/" },
       { title: "Istirahat dan makan lebih awal", meta: "09.00–11.30 · Sekitar Ciwidey" },
-      { title: "Ranca Upas opsional", meta: "11.30–13.00 · Ciwidey" },
+      { title: "Ranca Upas opsional", meta: "11.30–13.00 · Ciwidey", tag: "Instagram", href: "https://www.instagram.com/p/DOiqN0PCav8/" },
       { title: "Kembali ke Bandung + buffer besar", meta: "13.00–18.00 · Ciwidey menuju Bandung" },
       { title: "Makan malam dekat penginapan", meta: "18.00–19.30 · Bandung" },
       { title: "Braga opsional", meta: "19.30–20.15 · Bandung", tag: "TikTok", href: "https://www.tiktok.com/@mainbandung.yuk/video/7701695826116054290" },
