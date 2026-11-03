@@ -1,6 +1,7 @@
 import Countdown from "./components/Countdown";
 import InlineVideoReference, { ReferenceVideoProvider } from "./components/InlineVideoReference";
 import IntroExperience from "./components/IntroExperience";
+import JourneyPlanBucket from "./components/JourneyPlanBucket";
 import MusicPlayer from "./components/MusicPlayer";
 
 const storyMoments = [
@@ -13,15 +14,6 @@ const tripDetails = [
   { label: "Tujuan", value: "Bandung", icon: "⌖" },
   { label: "Tanggal", value: "15 Nov 2026", icon: "◷" },
   { label: "Suasana", value: "Hangat & tenang", icon: "♡" },
-];
-
-const bucketItems = [
-  { title: "Kawah Putih", meta: "06.00–10.30 · Rancabali, Ciwidey", tag: "Instagram", href: "https://www.instagram.com/reels/DHvu2qhyZXz/" },
-  { title: "Sunan Ibu", meta: "Kawasan Kawah Putih, Ciwidey", tag: "TikTok", href: "https://www.tiktok.com/@andinostory/video/7511990098645306631" },
-  { title: "Kawah Rengganis", meta: "13.30–15.00 · Rancabali, Ciwidey", tag: "TikTok", href: "https://www.tiktok.com/@eunike_octaviani/video/7667905164656839956" },
-  { title: "Kebun Teh Rancabali", meta: "15.00–15.30 · Rancabali, Ciwidey", tag: "TikTok", href: "https://www.tiktok.com/@neorentalmotorbdg/video/7276414435416100101" },
-  { title: "Kebun Stroberi Ciwidey", meta: "16.15–16.45 · Jalur Ciwidey", tag: "Instagram", href: "https://www.instagram.com/reels/C6YBhfPv2R2/" },
-  { title: "Braga", meta: "19.00–19.45 · Bandung", tag: "TikTok", href: "https://www.tiktok.com/@mainbandung.yuk/video/7701695826116054290" },
 ];
 
 function HeartMark({ small = false }: { small?: boolean }) {
@@ -125,14 +117,8 @@ export default function Home() {
 
       <section className="bucket section" id="bucket" aria-labelledby="bucket-title">
         <div className="shell">
-          <div className="bucket__header reveal-on-scroll"><div><p className="eyebrow"><span /> Referensi perjalanan</p><h2 id="bucket-title">Enam tempat untuk<br /><i>satu hari milik kita.</i></h2></div><p>Setiap destinasi memiliki referensi video yang bisa dibuka sambil menyusun rencana bersama.</p></div>
-          <div className="bucket__list">
-            {bucketItems.map((item, index) => (
-              <article className="bucket-row reveal-on-scroll" key={item.title}>
-                <span className="bucket-row__index">0{index + 1}</span><span className="bucket-row__check" aria-hidden="true" /><div><h3>{item.title}</h3><p>{item.meta}</p></div><span className="bucket-row__tag">{item.tag}</span><InlineVideoReference url={item.href} label={`Putar ${item.title}`} title={item.title} variant="row" />
-              </article>
-            ))}
-          </div>
+          <div className="bucket__header reveal-on-scroll"><div><p className="eyebrow"><span /> Referensi perjalanan</p><h2 id="bucket-title">Tiga rencana untuk<br /><i>satu hari milik kita.</i></h2></div><p>Pilih Plan A, B, atau C. Referensi video yang sudah tersedia bisa langsung diputar tanpa meninggalkan halaman.</p></div>
+          <JourneyPlanBucket />
           <p className="bucket__more"><a href="/manage">Buka planner untuk memberi reaction dan pesan <span>♡</span></a></p>
         </div>
       </section>
